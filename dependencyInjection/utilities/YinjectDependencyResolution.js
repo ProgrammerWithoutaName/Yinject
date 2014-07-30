@@ -1,4 +1,6 @@
 "use strict";
+var nodeUtilities = require(__dirname + '/../../utilities/nodeUtilities.js');
+var scopeTypes = nodeUtilities.requireEnum('scopeTypes.js');
 
 /*
  Scope:
@@ -57,7 +59,7 @@ YinjectDependencyResolution.prototype.resolve = function (dependencyName) {
 
     // technically, if this is a request scope it could cause problems with circular dependencies.
     //TODO: Fix circular dependency issues. At least verify they exist and throw a warning.
-    if (implementationGiven.scope() === 'default') {
+    if (implementationGiven.scope() === scopeTypes.defaultScope) {
         resolvedDependency = this._resolveWithoutScope(implementationGiven, scopes);
     } else {
         resolvedDependency = this._resolveFromScope(scopes[implementationGiven.scope()], implementationGiven, scopes);

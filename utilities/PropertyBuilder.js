@@ -14,7 +14,6 @@ PropertyBuilder.prototype.buildProperty = function (getFunctionOverride, setFunc
     setter = setFunctionOverride || function () { return; };
 
     // setup event handlers
-    this._eventManagerBuilder.buildEventManager();
     getterEvents = this._eventManagerBuilder.buildEventManager();
     setterEvents = this._eventManagerBuilder.buildEventManager();
 

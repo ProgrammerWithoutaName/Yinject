@@ -15,13 +15,13 @@ var arrayUtilities = requireUtility('arrayUtilities.js');
 var scopeTypes = requireEnum('scopeTypes.js');
 var dependencyTypes = requireEnum('dependencyTypes.js');
 
-
-var buildProp = function (propBuilder, watchedItem) {
-    return propBuilder.buildProperty(
-        function () { return watchedItem; },
-        function (value) { watchedItem = value; }
-    );
+var buildProp = function (propBuilder, itemOwner, watchedItemName) {
+	return propBuilder.buildProperty(
+		function () { return itemOwner[watchedItemName]; },
+		function (value) { itemOwner[watchedItemName] = value; }
+	);
 };
+
 
 var scopeIsValid = function (givenScope) {
     return arrayUtilities.valueExistsInArray(scopeTypes.allValues, givenScope);
@@ -47,13 +47,13 @@ var DependencyInformation = function () {
     var propBuilder = new PropertyBuilder(eventManagerBuilder);
 
     var self = this;
-    this.scope = buildProp(propBuilder, this._diData.scope);
-    this.dependencyType = buildProp(propBuilder, this._diData.dependencyType);
-    this.dependencyName = buildProp(propBuilder, this._diData.dependencyName);
-    this.dependencies = buildProp(propBuilder, this._diData.dependencies);
-    this.prototypeName = buildProp(propBuilder, this._diData.prototypeName);
-    this.location = buildProp(propBuilder, this._diData.location);
-    this.constructor = buildProp(propBuilder, this._diData.constructor);
+    this.scope = buildProp(propBuilder, this._diData, 'scope');
+    this.dependencyType = buildProp(propBuilder, this._diData, 'dependencyType');
+    this.dependencyName = buildProp(propBuilder, this._diData, 'dependencyName');
+    this.dependencies = buildProp(propBuilder, this._diData, 'dependencies');
+    this.prototypeName = buildProp(propBuilder, this._diData, 'prototypeName');
+    this.location = buildProp(propBuilder, this._diData, 'location');
+    this.constructor = buildProp(propBuilder, this._diData, 'constructor');
 
     this.scope.addSetEvent(function (sender, eventArgs) {
         if (!scopeIsValid(eventArgs.newValue)) {

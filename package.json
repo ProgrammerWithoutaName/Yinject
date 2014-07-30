@@ -1,17 +1,28 @@
 {
     "name": "yinject",
+	"description": "JavaScript Dependency Injection Library",
+	"version": "0.0.2",
+	"license": "Apache v2",
     "author": {
         "name": "programmerWithoutaName",
         "email": "Talk@ProgrammerWithouta.Name"
     },
-    "description": "JavaScript Dependency Injection Library",
     "repository": {
         "type": "git",
         "url": "https://github.com/ProgrammerWithoutaName/Yinject.git"
     },
-    "version": "0.0.1",
     "private": false,
-    "dependencies": {
-		"mocha":"*"
-	}
+    "dependencies": {},
+	"devDependencies": {
+		"mocha": "~1.21.3"
+	},
+	"keywords": [
+		"Dependency Injection",
+		"Inversion of Control",
+		"IOC"
+	],
+	"engines": {
+		"node": ">= 0.10.0"
+	},
+	"main":"app.js"
 }
