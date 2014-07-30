@@ -13,4 +13,4 @@ var prop = propertyBuilder.buildProperty();
 prop('something');
 var whatItIs = prop();
 */
-module.exports.yinjectBuilder = builder;
+module.exports = builder;

@@ -1,7 +1,7 @@
 {
     "name": "yinject",
 	"description": "JavaScript Dependency Injection Library",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"license": "Apache v2",
     "author": {
         "name": "programmerWithoutaName",
