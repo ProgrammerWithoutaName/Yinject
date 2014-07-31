@@ -6,6 +6,14 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Node.js v0.10.29 Core Modules" level="application" />
     <orderEntry type="library" name="Yinject node_modules" level="project" />
+    <orderEntry type="library" name="mocha" level="application" />
+    <orderEntry type="library" name="karma" level="application" />
+    <orderEntry type="library" name="karma-sinon" level="application" />
+    <orderEntry type="library" name="karma-chai" level="application" />
+    <orderEntry type="library" name="karma-mocha" level="application" />
+    <orderEntry type="library" name="chai" level="application" />
+    <orderEntry type="library" name="mocha-DefinitelyTyped" level="application" />
+    <orderEntry type="library" name="sinon-DefinitelyTyped" level="application" />
   </component>
 </module>
 

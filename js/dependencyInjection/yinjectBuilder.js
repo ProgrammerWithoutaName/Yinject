@@ -1,5 +1,5 @@
 'use strict';
-var nodeUtilities = require(__dirname + '/../utilities/nodeUtilities.js');
+var nodeUtilities = require(__dirname + 'js/../utilities/nodeUtilities.js');
 var requireFrom = nodeUtilities.requireFromLocationBuilder(__dirname);
 var requireEnum = nodeUtilities.requireEnum;
 
