@@ -27,7 +27,7 @@ EventManager.prototype.setEvent = function (id, eventCallback) {
 EventManager.prototype.removeEvent = function (id) {
     var index = this._getEventIndex(id);
     if (index >= 0) {
-        this._eventCallbacks.splice(index, 1);
+		this._eventCallbacks.splice(index, 1);
     }
 };
 
@@ -47,3 +47,4 @@ EventManagerBuilder.prototype.buildEventManager = function () {
 };
 
 module.exports.EventManagerBuilder = EventManagerBuilder;
+module.exports.EventManager = EventManager;
