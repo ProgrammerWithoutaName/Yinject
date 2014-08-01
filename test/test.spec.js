@@ -1,4 +1,6 @@
 "use strict";
+
+var expect = require('chai').expect;
 describe("A test suite",
 	function() {
 		beforeEach(function() { });

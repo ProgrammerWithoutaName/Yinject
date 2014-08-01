@@ -5,18 +5,23 @@ var requireUtility = nodeUtilities.requireUtility;
 var requireEnum = nodeUtilities.requireEnum;
 
 //Utility Libraries(?)
-var functionReflection = requireUtility('functionReflection.js');
 var protoUtil = requireUtility('prototypeUtilities.js');
+var functionUtilities = requireUtility('functionUtilities.js');
 
 
 // Utility
-module.exports.getFunctionArguments = functionReflection.getFunctionArguments;
 module.exports.extend = protoUtil.extend;
+module.exports.buildArguments = functionUtilities.buildArguments;
 module.exports.constructObjectWithArguments = protoUtil.constructObjectWithArguments;
-module.exports.buildArguments = protoUtil.buildArguments;
+module.exports.getFunctionArguments = functionUtilities.getFunctionArguments;
+module.exports.safeFunctionApply = functionUtilities.safeFunctionApply;
 
 // Prototypes
 module.exports.DependencyDeclarationBase = requireFrom('/DependencyDeclarationBase.js').DependencyDeclarationBase;
+module.exports.LocationBasedDependencyDeclaration = requireFrom('/LocationBasedDependencyDeclaration.js').LocationBasedDependencyDeclaration;
+module.exports.BuildBuilder = requireFrom('/BuildBuilder.js').BuildBuilder;
+
+// Data model prototypes
 module.exports.DependencyInformation = requireFrom('../DependencyInformation.js').DependencyInformation;
 
 // Enumerations
