@@ -1,13 +1,24 @@
 "use strict";
-var imports = require(__dirname + '/commonImports.js');
+var imports = require(__dirname + '/imports.js');
 
-var PrototypeDependencyDeclaration = function (dependencyName, prototype) {
-    this._dependencyInformation = new imports.DependencyInformation();
-    this._dependencyInformation.dependencyName(dependencyName);
-    this._dependencyInformation.prototypeName(prototypeName);
+var PrototypeDependencyDeclaration = function (dependencyName,
+												prototype,
+												dependencyInformation,
+												dependencyValidationUtility,
+												dependencyTypes,
+												scopeTypes,
+												functionUtilities,
+												prototypeUtilities) {
 
-    this._dependencyInformation.dependencyType(imports.dependencyTypes.prototypeDependency);
-    this._dependencyInformation.scope(imports.scopeTypes.defaultScope);
+	this._dependencyValidationUtility = dependencyValidationUtility;
+	this._functionUtilities = functionUtilities;
+	this._prototypeUtilities = prototypeUtilities;
+
+	this._dependencyInformation = dependencyInformation;
+	this._dependencyInformation.dependencyName(dependencyName);
+
+	this._dependencyInformation.dependencyType(dependencyTypes.prototypeDependency);
+	this._dependencyInformation.scope(scopeTypes.defaultScope);
 	if(typeof prototype === 'function') {
 		this._dependencyInformation.constructor(prototype);
 	} else if(typeof prototype === 'string') { // ???? can I do this?
@@ -25,23 +36,45 @@ PrototypeDependencyDeclaration.prototype.populate = function () {
 };
 
 PrototypeDependencyDeclaration.prototype._createBuildFromConstructor = function () {
-	this._dependencyInformation.dependencies(imports.getFunctionArguments(self._dependencyInformation.constructor()));
+	var self = this;
+	this._dependencyInformation.dependencies(self._functionUtilities.getFunctionArguments(self._dependencyInformation.constructor()));
 
 	this._dependencyInformation.build = function (dependencies) {
-		return imports.constructObjectWithArguments(self._dependencyInformation.constructor(),
-			imports.buildArguments(self._dependencyInformation.dependencies(), dependencies));
+		return self._prototypeUtilities.constructObjectWithArguments(self._dependencyInformation.constructor(),
+			self._functionUtilities.buildArguments(self._dependencyInformation.dependencies(), dependencies));
 	};
 };
 
 
-// multiple inheritance with override. order matters, so starting from the left going right will define
-// what functions will be kept when there are collisions. if Foo is defined in the child class, we will use childClasses foo
-// over the parents 'foo' implementation.
-// if there are multiple parents, same thing. in extend(child,parent1,parent2), if foo is defined in parent1 and parent2,
-// parent1 implementation will be used over parent2.
+var PrototypeDependencyDeclarationFactory = function (dependencyInformationFactory,
+														dependencyValidationUtility,
+														dependencyTypes,
+														scopeTypes,
+														functionUtilities,
+														prototypeUtilities) {
+	this._dependencyInformationFactory = dependencyInformationFactory;
+	this._dependencyValidationUtility = dependencyValidationUtility;
+	this._dependencyTypes = dependencyTypes;
+	this._scopeTypes = scopeTypes;
+	this._functionUtilities = functionUtilities;
+	this._prototypeUtilities = prototypeUtilities;
+};
+
+PrototypeDependencyDeclarationFactory.createPrototypeDependencyDeclaration = function (dependencyName, prototype) {
+	return new PrototypeDependencyDeclaration (dependencyName
+		, prototype
+		, this._dependencyInformationFactory.createDependencyInformation()
+		, this._dependencyValidationUtility
+		, this._dependencyTypes
+		, this._scopeTypes
+		, this._functionUtilities
+		, this._prototypeUtilities);
+};
 
 imports.extend(PrototypeDependencyDeclaration,
 	imports.LocationBasedDependencyDeclaration,
-	imports.DependencyDeclarationBase);
+	imports.BaseDependencyDeclaration);
 
+
+module.exports.PrototypeDependencyDeclarationFactory = PrototypeDependencyDeclarationFactory;
 module.exports.PrototypeDependencyDeclaration = PrototypeDependencyDeclaration;

@@ -1,5 +1,5 @@
 "use strict";
-var arrayUtil = require(__dirname + '/../../js/utilities/arrayUtilities.js');
+var arrayUtil = require(__dirname + '/../../js/utilities/arrayUtilities.js').buildArrayUtilities();
 var chai = require('chai');
 var expect = chai.expect;
 

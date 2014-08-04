@@ -1,22 +1,53 @@
 "use strict";
-var imports = require(__dirname + '/commonImports.js');
 
-var ModuleDependencyDeclaration = function (dependencyName, moduleName) {
-    this._dependencyInformation = new imports.DependencyInformation();
-    this._dependencyInformation.dependencyName(dependencyName);
-    this._dependencyInformation.location(moduleName);
-    this._dependencyInformation.dependencies([]);
-    this._dependencyInformation.dependencyType(imports.dependencyTypes.moduleDependency);
-    this._dependencyInformation.scope(imports.scopeTypes.defaultScope);
+var imports = require(__dirname + '/imports.js');
 
-    this.populate = function () {
-        var self = this;
-        this._dependencyInformation.build = function () {
-            return require(self._dependencyInformation.location());
-        };
-    };
+var ModuleDependencyDeclaration = function (dependencyName,
+	moduleName,
+	dependencyInformation,
+	dependencyValidationUtility,
+	dependencyTypes,
+	scopeTypes ) {
+
+	this._dependencyInformation = dependencyInformation;
+	this._dependencyInformation.dependencyName(dependencyName);
+	this._dependencyInformation.location(moduleName);
+	this._dependencyInformation.dependencies([]);
+	this._dependencyInformation.dependencyType(dependencyTypes.moduleDependency);
+	this._dependencyInformation.scope(scopeTypes.defaultScope);
+
+	this._dependencyValidationUtility = dependencyValidationUtility;
 };
 
-imports.extend(ModuleDependencyDeclaration, imports.DependencyDeclarationBase);
+ModuleDependencyDeclaration.prototype.populate = function () {
+	var self = this;
+	this._dependencyInformation.build = function () {
+		return require(self._dependencyInformation.location());
+	};
+};
 
+var ModuleDependencyDeclarationFactory = function (dependencyInformationFactory,
+												   	dependencyValidationUtility,
+													dependencyTypes,
+													scopeTypes) {
+	this._dependencyInformationFactory = dependencyInformationFactory;
+	this._dependencyValidationUtility = dependencyValidationUtility;
+	this._dependencyTypes = dependencyTypes;
+	this._scopeTypes = scopeTypes;
+};
+
+ModuleDependencyDeclarationFactory.createModuleDependencyDeclaration = function (dependencyName, moduleName) {
+	return new ModuleDependencyDeclaration(dependencyName,
+		moduleName,
+		this._dependencyInformationFactory.createDependencyInformation(),
+		this._dependencyValidationUtility,
+		this.dependencyTypes,
+		this.scopeTypes);
+};
+
+imports.extend(ModuleDependencyDeclaration, imports.BaseDependencyDeclaration);
+
+
+
+module.exports.ModuleDependencyDeclarationFactory = ModuleDependencyDeclarationFactory;
 module.exports.ModuleDependencyDeclaration = ModuleDependencyDeclaration;

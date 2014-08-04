@@ -17,7 +17,7 @@ Cache.prototype.getProp = function (id) {
 
 Cache.prototype.set = function (id, value) {
     if (this._cache[id] === undefined) {
-        this._cache[id] = this._propertyBuilder.buildProperty();
+        this._cache[id] = this._propertyBuilder.createProperty();
     }
 
     this._cache[id](value);
@@ -29,7 +29,7 @@ Cache.prototype.setProp = function (id, property) {
 
 Cache.prototype.addGetEvent = function (id, onGetCallback) {
     if (this._cache[id] === undefined) {
-        this._cache[id] = this._propertyBuilder.buildProperty();
+        this._cache[id] = this._propertyBuilder.createProperty();
     }
 
     if (onGetCallback !== undefined) {
@@ -47,7 +47,7 @@ Cache.prototype.removeGetEvent = function (id, onGetCallback) {
 
 Cache.prototype.addSetEvent = function (id, onSetCallback) {
     if (this._cache[id] === undefined) {
-        this._cache[id] = this._propertyBuilder.buildProperty();
+        this._cache[id] = this._propertyBuilder.createProperty();
     }
 
     if (onSetCallback !== undefined) {

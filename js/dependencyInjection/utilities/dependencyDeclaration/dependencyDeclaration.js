@@ -1,23 +1,24 @@
 "use strict";
-var nodeUtilities = require(__dirname + '/../../../utilities/nodeUtilities.js');
-var requireFrom = nodeUtilities.requireFromLocationBuilder(__dirname);
 
-var PrototypeDependencyDeclaration = requireFrom('/PrototypeDependencyDeclaration.js').PrototypeDependencyDeclaration;
-var CustomDependencyDeclaration = requireFrom('/CustomDependencyDeclaration.js').CustomDependencyDeclaration;
-var ModuleDependencyDeclaration = requireFrom('/ModuleDependencyDeclaration.js').ModuleDependencyDeclaration;
+var buildDependencyDeclarationUtility = function (prototypeDependencyDeclarationFactory,
+											customDependencyDeclarationFactory,
+											moduleDependencyDeclarationFactory) {
 
-var createPrototypeDependency = function (dependencyName, prototypeName) {
-    return new PrototypeDependencyDeclaration(dependencyName, prototypeName);
+	var dependencyDeclaration = {};
+
+	dependencyDeclaration.createPrototypeDependency = function (dependencyName, prototypeName) {
+		return new prototypeDependencyDeclarationFactory.createPrototypeDependencyDeclaration(dependencyName, prototypeName);
+	};
+
+	dependencyDeclaration.createCustomConstructorDependency = function (dependencyName, customConstructor) {
+		return new customDependencyDeclarationFactory.createCustomDependencyDeclaration(dependencyName, customConstructor);
+	};
+
+	dependencyDeclaration.createModuleDependency = function (dependencyName, moduleName) {
+		return new moduleDependencyDeclarationFactory.createModuleDependencyDeclaration(dependencyName, moduleName);
+	};
+
+	return dependencyDeclaration;
 };
 
-var createCustomConstructorDependency = function (dependencyName, customConstructor) {
-    return new CustomDependencyDeclaration(dependencyName, customConstructor);
-};
-
-var createModuleDependency = function (dependencyName, moduleName) {
-    return new ModuleDependencyDeclaration(dependencyName, moduleName);
-};
-
-module.exports.createPrototypeDependency = createPrototypeDependency;
-module.exports.createCustomConstructorDependency = createCustomConstructorDependency;
-module.exports.createModuleDependency = createModuleDependency;
+module.exports.buildDependencyDeclaration = buildDependencyDeclarationUtility;

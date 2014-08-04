@@ -1,10 +1,8 @@
 var chai = require('chai');
-var prototypeUtilities = require(__dirname + '/../../js/utilities/prototypeUtilities.js');
+var prototypeUtilitiesModule = require(__dirname + '/../../js/utilities/prototypeUtilities.js');
 
 var expect = chai.expect;
 
-var extend = prototypeUtilities.extend;
-var constructObjectWithArguments = prototypeUtilities.constructObjectWithArguments;
 
 var ParentObject = function() {};
 
@@ -34,6 +32,15 @@ var testFunctionValues = ['foo',42,'something'];
 
 describe('prototypeUtilities', function(){
 	describe('extend', function(){
+
+		var reflectionFactory = {};
+		var reflection = {};
+		reflectionFactory.createReflection = function(){ return reflection;};
+		reflection.addParent = function(){};
+		reflection.isTypeOf = function(){return false};
+
+		var extend = prototypeUtilitiesModule.buildPrototypeUtilities(reflectionFactory).extend;
+
 		extend(ChildObject, ParentObject);
 		var child = new ChildObject();
 		child.foo();
@@ -51,6 +58,19 @@ describe('prototypeUtilities', function(){
 		it('should use child functions when available even if parent functions are defined', function () {
 			expect(child.override).to.be.true;
 		});
+
+		it('should not extend the same type twice', function () {
+			reflection.isTypeOf = function () { return true;};
+			var newChildType = function(){};
+			newChildType.prototype.foo = function() {this.parentWasAdded = false;};
+			extend(newChildType, ParentObject);
+
+			var test = new newChildType();
+			test.foo();
+
+			expect(test.parentWasAdded).to.be.false;
+
+		});
 	});
 
 	/*var buildArguments = function (argumentDeclarationArray, argumentValuesObject) {
@@ -64,6 +84,7 @@ describe('prototypeUtilities', function(){
 
 
 	describe('constructObjectWithArguments', function () {
+		var constructObjectWithArguments = prototypeUtilitiesModule.buildPrototypeUtilities({}).constructObjectWithArguments;
 		var returnedObject = constructObjectWithArguments(ChildObject, testFunctionValues);
 		returnedObject.bar();
 

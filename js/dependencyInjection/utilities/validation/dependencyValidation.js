@@ -1,31 +1,32 @@
 "use strict";
 
-var nodeUtilities = require(__dirname + '/../../../utilities/nodeUtilities.js');
-var requireFrom = nodeUtilities.requireFromLocationBuilder(__dirname);
-var requireEnum = nodeUtilities.requireEnum;
+var buildDependencyValidationUtility = function (dependencyTypes,
+												 baseDependencyValidationUtility,
+												 prototypeValidationUtility,
+												 customDependencyValidationUtility) {
 
-// enumerations
-var dependencyTypes = requireEnum('dependencyTypes.js');
-// Validation
-var baseValidation = requireFrom('/baseDependencyValidation.js');
-var prototypeValidation = requireFrom('/prototypeDependencyValidation.js');
-var customDependencyValidation = requireFrom('/customDependencyValidation.js');
 
-var verifyDependencyInformation = function (dependencyInformation) {
+	var dependencyInformationValidationUtility = {};
+	dependencyInformationValidationUtility.verifyDependencyInformation = function (dependencyInformation) {
 
-    baseValidation.verifyBaseDependencyInformation(dependencyInformation);
+		baseDependencyValidationUtility.verifyBaseDependencyInformation(dependencyInformation);
 
-    switch (dependencyInformation.dependencyType()) {
-    case dependencyTypes.prototypeDependency:
-        prototypeValidation.verifyPrototypeDependencyInformation(dependencyInformation);
-        break;
-    case dependencyTypes.moduleDependency:
-        baseValidation.verifyModuleExists(dependencyInformation);
-        break;
-    case dependencyTypes.customDependency:
-        customDependencyValidation.verifyCustomDependencyInformation(dependencyInformation);
-        break;
-    }
+		switch (dependencyInformation.dependencyType()) {
+			case dependencyTypes.prototypeDependency:
+				prototypeValidationUtility.verifyPrototypeDependencyInformation(dependencyInformation);
+				break;
+			case dependencyTypes.moduleDependency:
+				baseDependencyValidationUtility.verifyModuleExists(dependencyInformation);
+				break;
+			case dependencyTypes.customDependency:
+				customDependencyValidationUtility.verifyCustomDependencyInformation(dependencyInformation);
+				break;
+		}
+	};
+
+	return dependencyInformationValidationUtility;
 };
 
-module.exports.verifyDependencyInformation = verifyDependencyInformation;
+
+
+module.exports.buildDependencyValidationUtility = buildDependencyValidationUtility;

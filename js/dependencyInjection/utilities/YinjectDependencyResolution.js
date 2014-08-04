@@ -1,23 +1,12 @@
 "use strict";
-var nodeUtilities = require(__dirname + '/../../utilities/nodeUtilities.js');
-var scopeTypes = nodeUtilities.requireEnum('scopeTypes.js');
 
-/*
- Scope:
- Default: creates new dependency each time
- Request: Only creates one of the types per "resolve"
- Singleton: creates
- */
-var YinjectDependencyResolution = function () {
+var YinjectDependencyResolution = function (scopeTypes) {
     // private
     this.container = {};
     this._singletons = {};
+	this._scopeTypes = scopeTypes;
 };
 
-
-// how do we resolve a cross dependency, or at least detect one?
-// This is how http://misko.hevery.com/2008/08/01/circular-dependency-in-constructors-and-dependency-injection/
-// Worth noting: Circular dependencies are bad anyways. How do we at least detect them?
 YinjectDependencyResolution.prototype._resolveWithoutScope = function (dependencyImplementation, scopes) {
     var resolvedDependencies = {};
     var dependenciesToResolve = dependencyImplementation.dependencies();
@@ -67,5 +56,14 @@ YinjectDependencyResolution.prototype.resolve = function (dependencyName) {
     return resolvedDependency;
 };
 
+var YinjectDependencyResolutionFactory = function (scopeTypes) {
+	this._scopeTypes = scopeTypes;
+};
+
+YinjectDependencyResolutionFactory.createDependencyResolution = function () {
+	return new YinjectDependencyResolution(this._scopeTypes);
+};
+
 module.exports.YinjectDependencyResolution = YinjectDependencyResolution;
+module.exports.YinjectDependencyResolutionFactory = YinjectDependencyResolutionFactory;
 

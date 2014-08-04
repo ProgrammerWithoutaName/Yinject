@@ -1,6 +1,10 @@
 "use strict";
 var chai = require('chai');
-var functionUtilities = require(__dirname + '/../../js/utilities/functionUtilities.js');
+
+var arrayUtilitiesBuilder = require(__dirname + '/../../js/utilities/arrayUtilities.js');
+
+var arrayUtilities = arrayUtilitiesBuilder.buildArrayUtilities();
+var functionUtilities = require(__dirname + '/../../js/utilities/functionUtilities.js').buildFunctionUtilities({}, arrayUtilities);
 
 var expect = chai.expect;
 

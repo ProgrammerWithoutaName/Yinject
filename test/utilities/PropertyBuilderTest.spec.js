@@ -1,6 +1,9 @@
 "use strict";
-var PropertyBuilderModule = require(__dirname + '/../../js/utilities/PropertyBuilder.js');
-var PropertyBuilder = PropertyBuilderModule.PropertyBuilder;
+var PropertyFactoryModule = require(__dirname + '/../../js/utilities/PropertyFactory.js');
+var prototypeUtilitiesMock = {
+	extend: function(){}
+};
+var PropertyFactory = PropertyFactoryModule.PropertyFactory;
 
 var chai = require('chai');
 var expect = chai.expect;
@@ -9,7 +12,7 @@ var MockEventManager = function () {
 
 };
 
-MockEventManager.prototype.buildEventManager = function () {
+MockEventManager.prototype.createEventManager = function () {
 	var eventManager = {};
 	eventManager.setEvent = function () {};
 	eventManager.callEvent = function () {};
@@ -17,20 +20,20 @@ MockEventManager.prototype.buildEventManager = function () {
 	return eventManager;
 };
 
-// PropertyBuilder Requirements:
-// EventManagerBuilder
-//	-EventManagerBuilder.buildEventManager()- returns an "EventManager";
+// PropertyFactory Requirements:
+// EventManagerFactory
+//	-EventManagerFactory.createEventManager()- returns an "EventManager";
 //	EventManager that is returned (This possibly indicates a bad design, as I'm having to implement multiple layers deep.)
 //		EventManager.setEvent
 //		EventManager.removeEvent
 
-describe('PropertyBuilder', function () {
+describe('PropertyFactory', function () {
 	var mockEventManager = new MockEventManager();
 	// takes an event builder.
 	// propertyBuilder should be able to retain and handle it's own properties.
 
 	it('should only call get when getter is called', function () {
-		var propBuilderTest = new PropertyBuilder(mockEventManager);
+		var propFactoryTest = new PropertyFactory(mockEventManager, prototypeUtilitiesMock);
 		var testContext = {
 			getCalled: false,
 			setCalled: false
@@ -38,7 +41,7 @@ describe('PropertyBuilder', function () {
 		var getter = function () { testContext.getCalled = true; };
 		var setter = function () { testContext.setCalled = true;};
 
-		var propTest = propBuilderTest.buildProperty(getter,setter);
+		var propTest = propFactoryTest.createProperty(getter,setter);
 		propTest();
 
 		expect(testContext.getCalled).to.be.true;
@@ -46,7 +49,7 @@ describe('PropertyBuilder', function () {
 	});
 
 	it('should only call set when setter is called', function () {
-		var propBuilderTest = new PropertyBuilder(mockEventManager);
+		var propBuilderTest = new PropertyFactory(mockEventManager, prototypeUtilitiesMock);
 		var testContext = {
 			getCalled: false,
 			setCalled: false
@@ -54,7 +57,7 @@ describe('PropertyBuilder', function () {
 		var getter = function () { testContext.getCalled = true; };
 		var setter = function () { testContext.setCalled = true;};
 
-		var propTest = propBuilderTest.buildProperty(getter,setter);
+		var propTest = propBuilderTest.createProperty(getter,setter);
 		propTest('new');
 
 		expect(testContext.getCalled).to.be.false;
@@ -63,7 +66,7 @@ describe('PropertyBuilder', function () {
 
 
 	it('should return correct value when getter is called', function () {
-		var propBuilderTest = new PropertyBuilder(mockEventManager);
+		var propBuilderTest = new PropertyFactory(mockEventManager, prototypeUtilitiesMock);
 		var expectedValue = 5;
 		var testContext = {
 			value: 5
@@ -71,7 +74,7 @@ describe('PropertyBuilder', function () {
 		var getter = function () { return testContext.value; };
 		var setter = function () { };
 
-		var propTest = propBuilderTest.buildProperty(getter,setter);
+		var propTest = propBuilderTest.createProperty(getter,setter);
 
 
 		expect(propTest()).to.equal(expectedValue);
@@ -81,13 +84,13 @@ describe('PropertyBuilder', function () {
 	});
 
 	it('should call getter after setter is called.', function (){
-		var propBuilderTest = new PropertyBuilder(mockEventManager);
+		var propBuilderTest = new PropertyFactory(mockEventManager, prototypeUtilitiesMock);
 		var baseValue = 0;
 		var expectedValue = 1;
 		var getter = function () { };
 		var setter = function () { baseValue++;};
 
-		var propTest = propBuilderTest.buildProperty(getter,setter);
+		var propTest = propBuilderTest.createProperty(getter,setter);
 
 		propTest('bleh');
 		expect(baseValue).to.equal(expectedValue);
@@ -95,56 +98,56 @@ describe('PropertyBuilder', function () {
 
 
 	it('should be able to take only a getter', function () {
-		var propBuilderTest = new PropertyBuilder(mockEventManager);
+		var propBuilderTest = new PropertyFactory(mockEventManager, prototypeUtilitiesMock);
 		var getter = function () { };
 
-		var testCall = function () { propBuilderTest.buildProperty(getter); };
+		var testCall = function () { propBuilderTest.createProperty(getter); };
 
 		// is this correct?
 		expect(testCall).not.to.throw(Error);
 	});
 
 	it('should throw an error when attempting to set when no setter is defined and a getter is defined.', function () {
-		var propBuilderTest = new PropertyBuilder(mockEventManager);
+		var propBuilderTest = new PropertyFactory(mockEventManager, prototypeUtilitiesMock);
 		var getter = function () { };
-		var property = propBuilderTest.buildProperty(getter);
+		var property = propBuilderTest.createProperty(getter);
 
 		var testCall = function () { property(''); };
 		// is this correct?
-		expect(testCall).to.throw(PropertyBuilderModule.UndefinedSetterError);
+		expect(testCall).to.throw(PropertyFactoryModule.UndefinedSetterError);
 	});
 
 	it('should be able to take only a setter', function () {
-		var propBuilderTest = new PropertyBuilder(mockEventManager);
+		var propBuilderTest = new PropertyFactory(mockEventManager, prototypeUtilitiesMock);
 		var setter = function () { };
 
-		var testCall = function () { propBuilderTest.buildProperty(undefined,setter); };
+		var testCall = function () { propBuilderTest.createProperty(undefined,setter); };
 
 		// is this correct?
 		expect(testCall).not.to.throw(Error);
 	});
 
 	it('should throw an error on get if no getter is defined and a setter is defined', function(){
-		var propBuilderTest = new PropertyBuilder(mockEventManager);
+		var propBuilderTest = new PropertyFactory(mockEventManager, prototypeUtilitiesMock);
 		var setter = function () { };
-		var property = propBuilderTest.buildProperty(undefined, setter);
+		var property = propBuilderTest.createProperty(undefined, setter);
 
 		var testCall = function () { property(); };
 
-		expect(testCall).to.throw(PropertyBuilderModule.UndefinedGetterError);
+		expect(testCall).to.throw(PropertyFactoryModule.UndefinedGetterError);
 	});
 
 	it('should retain its own variable if no getters or setters are applied', function () {
-		var propBuilderTest = new PropertyBuilder(mockEventManager);
-		var prop = propBuilderTest.buildProperty();
+		var propBuilderTest = new PropertyFactory(mockEventManager, prototypeUtilitiesMock);
+		var prop = propBuilderTest.createProperty();
 		var expected = 'foo';
 		prop(expected);
 		expect(prop()).to.equal(expected);
 	});
 
 	it('should call onGet with correct values when getting with internal value', function () {
-		var propBuilderTest = new PropertyBuilder(mockEventManager);
-		var prop = propBuilderTest.buildProperty();
+		var propBuilderTest = new PropertyFactory(mockEventManager, prototypeUtilitiesMock);
+		var prop = propBuilderTest.createProperty();
 		var expectedValue = 'foo';
 		var passedValue;
 		prop._getterEvents.callEvent = function (caller, args) {
@@ -156,11 +159,11 @@ describe('PropertyBuilder', function () {
 	});
 
 	it('should call onGet with currentValue equal to getter when getting', function () {
-		var propBuilderTest = new PropertyBuilder(mockEventManager);
+		var propBuilderTest = new PropertyFactory(mockEventManager, prototypeUtilitiesMock);
 		var expectedValue = 'foo';
 
 		var getter = function () { return expectedValue; };
-		var prop = propBuilderTest.buildProperty(getter);
+		var prop = propBuilderTest.createProperty(getter);
 
 		var passedValue;
 		prop._getterEvents.callEvent = function (caller, args) {
@@ -172,10 +175,10 @@ describe('PropertyBuilder', function () {
 	});
 
 	it('should call onSet BEFORE setting internal variable', function () {
-		var propBuilderTest = new PropertyBuilder(mockEventManager);
+		var propBuilderTest = new PropertyFactory(mockEventManager, prototypeUtilitiesMock);
 		var expectedValue = 5;
 
-		var prop = propBuilderTest.buildProperty();
+		var prop = propBuilderTest.createProperty();
 		prop._watchedVariable = 0;
 
 		prop._setterEvents.callEvent = function () {
@@ -186,11 +189,11 @@ describe('PropertyBuilder', function () {
 	});
 
 	it('should call onSet with correct values when setting internal variable', function () {
-		var propBuilderTest = new PropertyBuilder(mockEventManager);
+		var propBuilderTest = new PropertyFactory(mockEventManager, prototypeUtilitiesMock);
 		var expectedNewValue = 'foo';
 		var expectedOldValue = 'bar';
 
-		var prop = propBuilderTest.buildProperty();
+		var prop = propBuilderTest.createProperty();
 		prop._watchedVariable = expectedOldValue;
 
 		var passedValue;
@@ -206,7 +209,7 @@ describe('PropertyBuilder', function () {
 	});
 
 	it('should call onSet BEFORE setting with a setter', function () {
-		var propBuilderTest = new PropertyBuilder(mockEventManager);
+		var propBuilderTest = new PropertyFactory(mockEventManager, prototypeUtilitiesMock);
 		var expectedValue = 5;
 		var watched = 0;
 
@@ -214,7 +217,7 @@ describe('PropertyBuilder', function () {
 			watched = value;
 		};
 
-		var prop = propBuilderTest.buildProperty(undefined, setter);
+		var prop = propBuilderTest.createProperty(undefined, setter);
 
 		prop._setterEvents.callEvent = function () {
 			watched++;
@@ -224,10 +227,10 @@ describe('PropertyBuilder', function () {
 	});
 
 	it('should only return a value on get a variable', function () {
-		var propBuilderTest = new PropertyBuilder(mockEventManager);
+		var propBuilderTest = new PropertyFactory(mockEventManager, prototypeUtilitiesMock);
 		var expectedValue = 5;
 
-		var prop = propBuilderTest.buildProperty();
+		var prop = propBuilderTest.createProperty();
 		prop._watchedVariable = expectedValue;
 
 		expect(prop()).to.equal(expectedValue);
@@ -235,8 +238,8 @@ describe('PropertyBuilder', function () {
 	});
 
 	it('should call "setEvent" with set event given when addSetEvent is called for variable', function () {
-		var propBuilderTest = new PropertyBuilder(mockEventManager);
-		var prop = propBuilderTest.buildProperty();
+		var propBuilderTest = new PropertyFactory(mockEventManager, prototypeUtilitiesMock);
+		var prop = propBuilderTest.createProperty();
 		var givenId, givenEvent;
 
 		prop._setterEvents.setEvent = function (id, event) {
@@ -251,8 +254,8 @@ describe('PropertyBuilder', function () {
 	});
 
 	it('should call "setEvent" with set event given when addSetEvent is called for setter', function () {
-		var propBuilderTest = new PropertyBuilder(mockEventManager);
-		var prop = propBuilderTest.buildProperty(undefined,function(){});
+		var propBuilderTest = new PropertyFactory(mockEventManager, prototypeUtilitiesMock);
+		var prop = propBuilderTest.createProperty(undefined,function(){});
 		var givenId, givenEvent;
 
 		prop._setterEvents.setEvent = function (id, event) {
@@ -267,8 +270,8 @@ describe('PropertyBuilder', function () {
 	});
 
 	it('should call "setEvent" with set event given when addGetEvent is called for variable', function () {
-		var propBuilderTest = new PropertyBuilder(mockEventManager);
-		var prop = propBuilderTest.buildProperty();
+		var propBuilderTest = new PropertyFactory(mockEventManager, prototypeUtilitiesMock);
+		var prop = propBuilderTest.createProperty();
 		var givenId, givenEvent;
 
 		prop._getterEvents.setEvent = function (id, event) {
@@ -283,8 +286,8 @@ describe('PropertyBuilder', function () {
 	});
 
 	it('should call "setEvent" with Get event given when addSetEvent is called for Getter', function () {
-		var propBuilderTest = new PropertyBuilder(mockEventManager);
-		var prop = propBuilderTest.buildProperty(function(){});
+		var propBuilderTest = new PropertyFactory(mockEventManager, prototypeUtilitiesMock);
+		var prop = propBuilderTest.createProperty(function(){});
 		var givenId, givenEvent;
 
 		prop._getterEvents.setEvent = function (id, event) {
@@ -299,8 +302,8 @@ describe('PropertyBuilder', function () {
 	});
 
 	it('should call "removeEvent" with correct variables when removing Get event for the variable', function () {
-		var propBuilderTest = new PropertyBuilder(mockEventManager);
-		var prop = propBuilderTest.buildProperty();
+		var propBuilderTest = new PropertyFactory(mockEventManager, prototypeUtilitiesMock);
+		var prop = propBuilderTest.createProperty();
 		var givenId;
 
 		prop._getterEvents.removeEvent = function (id) {
@@ -314,8 +317,8 @@ describe('PropertyBuilder', function () {
 	});
 
 	it('should call "removeEvent" with correct variables when removing Set event for the variable', function () {
-		var propBuilderTest = new PropertyBuilder(mockEventManager);
-		var prop = propBuilderTest.buildProperty();
+		var propBuilderTest = new PropertyFactory(mockEventManager, prototypeUtilitiesMock);
+		var prop = propBuilderTest.createProperty();
 		var givenId;
 
 		prop._setterEvents.removeEvent = function (id) {
@@ -329,8 +332,8 @@ describe('PropertyBuilder', function () {
 	});
 
 	it('should call "removeEvent" when removing event for the getter', function () {
-		var propBuilderTest = new PropertyBuilder(mockEventManager);
-		var prop = propBuilderTest.buildProperty(function(){});
+		var propBuilderTest = new PropertyFactory(mockEventManager, prototypeUtilitiesMock);
+		var prop = propBuilderTest.createProperty(function(){});
 		var givenId;
 
 		prop._getterEvents.removeEvent = function (id) {
@@ -344,8 +347,8 @@ describe('PropertyBuilder', function () {
 	});
 
 	it('should call "removeEvent" when removing event for the setter', function () {
-		var propBuilderTest = new PropertyBuilder(mockEventManager);
-		var prop = propBuilderTest.buildProperty(undefined,function(){});
+		var propBuilderTest = new PropertyFactory(mockEventManager, prototypeUtilitiesMock);
+		var prop = propBuilderTest.createProperty(undefined,function(){});
 		var givenId;
 
 		prop._setterEvents.removeEvent = function (id) {

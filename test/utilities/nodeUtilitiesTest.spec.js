@@ -1,5 +1,5 @@
 "use strict";
-var nodeUtilities = require(__dirname + '/../../js/utilities/nodeUtilities.js');
+var nodeUtilities = require(__dirname + '/../../js/utilities/nodeUtilities.js').buildNodeUtilities();
 // we only need to test 2 forms of functionality here
 // RequireFromLocation
 // pathOf

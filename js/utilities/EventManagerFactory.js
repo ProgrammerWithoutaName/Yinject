@@ -40,11 +40,11 @@ EventManager.prototype.callEvent = function (sender, args) {
 
 
 
-var EventManagerBuilder = function () { return; };
+var EventManagerFactory = function () { return; };
 
-EventManagerBuilder.prototype.buildEventManager = function () {
+EventManagerFactory.prototype.createEventManager = function () {
     return new EventManager();
 };
 
-module.exports.EventManagerBuilder = EventManagerBuilder;
+module.exports.EventManagerFactory = EventManagerFactory;
 module.exports.EventManager = EventManager;

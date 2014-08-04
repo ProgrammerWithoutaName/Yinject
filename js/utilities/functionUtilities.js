@@ -1,25 +1,28 @@
-var functionReflection = require(__dirname + '/functionReflection.js');
-var forEach = require(__dirname + '/arrayUtilities.js').forEach;
 
-var buildArguments = function (argumentDeclarationArray, argumentValuesObject) {
-	var args = [];
-	forEach(argumentDeclarationArray, function (declaration) {
-		args.push(argumentValuesObject[declaration]);
-	});
-	return args;
-};
 
-var safeFunctionApply = function (fn, args) {
-	var emptyContext = {};
-	var f = function () {
-		return fn.apply(emptyContext, args);
+var buildFunctionUtilities = function(functionReflection, arrayUtilities) {
+	var functionUtilities = {};
+
+	functionUtilities.buildArguments = function (argumentDeclarationArray, argumentValuesObject) {
+		var args = [];
+		arrayUtilities.forEach(argumentDeclarationArray, function (declaration) {
+			args.push(argumentValuesObject[declaration]);
+		});
+		return args;
 	};
 
-	return f();
+	functionUtilities.safeFunctionApply = function (fn, args) {
+		var emptyContext = {};
+		var f = function () {
+			return fn.apply(emptyContext, args);
+		};
+
+		return f();
+	};
+
+	functionUtilities.getFunctionArguments = functionReflection.getFunctionArguments;
+
+	return functionUtilities;
 };
 
-
-module.exports.buildArguments = buildArguments;
-module.exports.safeFunctionApply = safeFunctionApply;
-module.exports.getFunctionArguments = functionReflection.getFunctionArguments;
-
+module.exports.buildFunctionUtilities = buildFunctionUtilities;

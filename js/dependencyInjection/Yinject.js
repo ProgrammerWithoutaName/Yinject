@@ -1,19 +1,16 @@
 'use strict';
-var nodeUtilities = require(__dirname + '/../utilities/nodeUtilities.js');
-var requireFrom = nodeUtilities.requireFromLocationBuilder(__dirname);
 
-var YinjectDependencyResolution = requireFrom('utilities/YinjectDependencyResolution.js').YinjectDependencyResolution;
-var dependencyDeclaration = requireFrom('utilities/dependencyDeclaration/dependencyDeclaration.js');
-var dependencyContainerValidation = requireFrom('/utilities/dependencyContainerValidation/dependencyContainerValidation.js');
 /*
 Scope:
     Default: creates new dependency each time
     Request: Only creates one of the types per "resolve"
     Singleton: creates
  */
-var Yinject = function () {
+var Yinject = function (yinjectDependencyResolution, dependencyDeclarationUtility, dependencyContainerValidation) {
     // private
-    this._resolver = new YinjectDependencyResolution();
+    this._resolver = yinjectDependencyResolution;
+	this._dependencyDeclaration = dependencyDeclarationUtility;
+	this._dependencyContainerValidation = dependencyContainerValidation;
     this._uncheckedDeclarations = [];
     this._declarations = [];
 };
@@ -24,7 +21,7 @@ Yinject.prototype._pushDeclaration = function (dependency) {
 };
 
 Yinject.prototype._validateDependencyContainer = function () {
-    dependencyContainerValidation.validateContainer(this._resolver.container, this._declarations);
+    this._dependencyContainerValidation.validateContainer(this._resolver.container, this._declarations);
 };
 
 //is compile the right word??
@@ -49,24 +46,37 @@ Yinject.prototype.forDependency = function (dependencyName) {
     var self = this;
     return {
         usePrototype: function (prototypeName) {
-            var declaration = dependencyDeclaration.createPrototypeDependency(dependencyName, prototypeName);
+            var declaration = self._dependencyDeclaration.createPrototypeDependency(dependencyName, prototypeName);
             self._pushDeclaration(declaration);
             return declaration;
         },
         useModule: function (moduleName) {
-            var declaration = dependencyDeclaration.createModuleDependency(dependencyName, moduleName);
+            var declaration = self._dependencyDeclaration.createModuleDependency(dependencyName, moduleName);
             self._pushDeclaration(declaration);
             return declaration;
         },
         useCustomConstructor: function (constructor) {
-            var declaration = dependencyDeclaration.createCustomConstructorDependency(dependencyName, constructor);
+            var declaration = self._dependencyDeclaration.createCustomConstructorDependency(dependencyName, constructor);
             self._pushDeclaration(declaration);
             return declaration;
         }
     };
 };
 
+//not that it should be needed....
+var YinjectFactory = function (yinjectDependencyResolutionFactory, dependencyDeclarationUtility, dependencyContainerValidation) {
+	this._yinjectDependencyResolutionFactory = yinjectDependencyResolutionFactory;
+	this._dependencyDeclarationUtility = dependencyDeclarationUtility;
+	this._dependencyContainerValidation = dependencyContainerValidation;
+};
 
+YinjectFactory.prototype.createYinjector = function () {
+	return new Yinject(this._yinjectDependencyResolutionFactory.createDependencyResolution()
+		, this._dependencyDeclarationUtility
+		, this._dependencyContainerValidation);
+};
 
+module.exports.YinjectFactory = YinjectFactory;
 module.exports.Yinject = Yinject;
+
 

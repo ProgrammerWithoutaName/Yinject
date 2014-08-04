@@ -1,25 +1,29 @@
 'use strict';
-var extend = require(__dirname + '/prototypeUtilities.js').extend;
+var utilityBuilder = require(__dirname + '/utilityBuilder.js');
+var prototypeUtilities = utilityBuilder.buildUtility(utilityBuilder.utilities.prototypeUtilities);
+
+
 
 var UndefinedSetterError = function() {
+	this.message = 'No Setter Defined';
 };
 
 UndefinedSetterError.prototype.name = 'Undefined Setter Error';
-UndefinedSetterError.prototype.message = 'No Setter Defined';
 
 var UndefinedGetterError = function() {
+	this.message = 'No Getter Defined';
 };
 UndefinedGetterError.prototype.name = 'Undefined Getter Error';
-UndefinedGetterError.prototype.message = 'No Getter Defined';
 
-extend(UndefinedSetterError, ReferenceError);
-extend(UndefinedGetterError, ReferenceError);
+prototypeUtilities.extend(UndefinedSetterError, ReferenceError);
+prototypeUtilities.extend(UndefinedGetterError, ReferenceError);
 
-var PropertyBuilder = function (eventManagerBuilder) {
-    this._eventManagerBuilder = eventManagerBuilder;
+var PropertyFactory = function (eventManagerFactory) {
+
+    this._eventManagerFactory = eventManagerFactory;
 };
 
-PropertyBuilder.prototype.buildProperty = function (getFunctionOverride, setFunctionOverride) {
+PropertyFactory.prototype.createProperty = function (getFunctionOverride, setFunctionOverride) {
 
     var getter, setter, watchedVariable;
     var getterEvents, setterEvents;
@@ -30,8 +34,8 @@ PropertyBuilder.prototype.buildProperty = function (getFunctionOverride, setFunc
     setter = setFunctionOverride || function () { throw new UndefinedSetterError(); };
 
     // setup event handlers
-    getterEvents = this._eventManagerBuilder.buildEventManager();
-    setterEvents = this._eventManagerBuilder.buildEventManager();
+    getterEvents = this._eventManagerFactory.createEventManager();
+    setterEvents = this._eventManagerFactory.createEventManager();
 
     // is this a standard variable?
     if (arguments.length < 1) {
@@ -84,6 +88,6 @@ PropertyBuilder.prototype.buildProperty = function (getFunctionOverride, setFunc
     return property;
 };
 
-module.exports.PropertyBuilder = PropertyBuilder;
-module.exports.UndefinedGetterError = UndefinedGetterError;
+module.exports.PropertyFactory = PropertyFactory;
 module.exports.UndefinedSetterError = UndefinedSetterError;
+module.exports.UndefinedGetterError = UndefinedGetterError;

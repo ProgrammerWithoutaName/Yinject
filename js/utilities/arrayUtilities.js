@@ -1,21 +1,27 @@
 "use strict";
 
-var valueExistsInArray = function (array, value) {
-    var i;
-    for (i = 0; i < array.length; i++) {
-        if (array[i] === value) {
-            return true;
-        }
-    }
-    return false;
+var buildArrayUtilities = function () {
+	var arrayUtilities = {};
+
+	arrayUtilities.valueExistsInArray = function (array, value) {
+		var i;
+		for (i = 0; i < array.length; i++) {
+			if (array[i] === value) {
+				return true;
+			}
+		}
+		return false;
+	};
+
+	arrayUtilities.forEach = function (array, callback) {
+		var i;
+		for (i = 0; i < array.length; i++) {
+			callback(array[i]);
+		}
+	};
+
+	return arrayUtilities;
 };
 
-var forEach = function (array, callback) {
-    var i;
-    for (i = 0; i < array.length; i++) {
-        callback(array[i]);
-    }
-};
 
-module.exports.valueExistsInArray = valueExistsInArray;
-module.exports.forEach = forEach;
+module.exports.buildArrayUtilities = buildArrayUtilities;

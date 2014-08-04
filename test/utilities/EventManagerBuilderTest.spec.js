@@ -1,7 +1,7 @@
 "use strict";
-var module = require(__dirname + '/../../js/utilities/EventManagerBuilder.js');
+var module = require(__dirname + '/../../js/utilities/EventManagerFactory.js');
 
-var EventManagerBuilder = module.EventManagerBuilder;
+var EventManagerFactory = module.EventManagerFactory;
 var EventManager = module.EventManager;
 
 var chai = require('chai');
@@ -20,10 +20,10 @@ var expect = chai.expect;
 // calls all events
 // doesn't error out when there are no events.
 
-describe('EventManagerBuilder', function () {
+describe('EventManagerFactory', function () {
 	it('should return an eventManager', function (){
-		var eventManagerBuilder = new EventManagerBuilder;
-		var eventManager = eventManagerBuilder.buildEventManager();
+		var eventManagerFactory = new EventManagerFactory();
+		var eventManager = eventManagerFactory.createEventManager();
 		expect(eventManager).to.be.instanceOf(EventManager);
 	});
 });
@@ -36,9 +36,9 @@ describe('EventManager', function () {
 	var functionArray = [oldFunction, expectedFunction, otherFunction];
 
 	describe('setEvent', function () {
-		var eventManagerBuilder = new EventManagerBuilder;
+		var eventManagerFactory = new EventManagerFactory();
 		it('should set an event with the correct ID on Set', function () {
-			var eventManager = eventManagerBuilder.buildEventManager();
+			var eventManager = eventManagerFactory.createEventManager();
 			var expectedId = 0;
 
 			eventManager.setEvent(expectedId, expectedFunction);
@@ -48,7 +48,7 @@ describe('EventManager', function () {
 		});
 
 		it('should override an existing event with the same ID', function () {
-			var eventManager = eventManagerBuilder.buildEventManager();
+			var eventManager = eventManagerFactory.createEventManager();
 			var expectedId = 0;
 
 			eventManager.setEvent(expectedId, oldFunction);
@@ -60,7 +60,7 @@ describe('EventManager', function () {
 		});
 
 		it('should accept multiple events with different ids', function () {
-			var eventManager = eventManagerBuilder.buildEventManager();
+			var eventManager = eventManagerFactory.createEventManager();
 
 			var i = functionArray.length - 1;
 			for (i; i >= 0; i--) {
@@ -76,10 +76,10 @@ describe('EventManager', function () {
 	});
 
 	describe('removeEvent', function () {
-		var eventManagerBuilder = new EventManagerBuilder;
+		var eventManagerFactory = new EventManagerFactory;
 
 		it('should remove event with given id', function () {
-			var eventManager = eventManagerBuilder.buildEventManager();
+			var eventManager = eventManagerFactory.createEventManager();
 			var arrayIdToRemove = 1;
 
 			var i = functionArray.length - 1;
@@ -96,7 +96,7 @@ describe('EventManager', function () {
 		});
 
 		it('should remove event with function as ID', function () {
-			var eventManager = eventManagerBuilder.buildEventManager();
+			var eventManager = eventManagerFactory.createEventManager();
 			var arrayIdToRemove = 1;
 
 			var i = functionArray.length - 1;
@@ -116,9 +116,9 @@ describe('EventManager', function () {
 	});
 
 	describe('callEvent', function () {
-		var eventManagerBuilder = new EventManagerBuilder();
+		var eventManagerFactory = new EventManagerFactory();
 		it('should call every event given', function () {
-			var eventManager = eventManagerBuilder.buildEventManager();
+			var eventManager = eventManagerFactory.createEventManager();
 
 			var eventObject = {
 				testArray: ['fnA', 'fnB', 'fnC'],
@@ -142,7 +142,7 @@ describe('EventManager', function () {
 			expect(eventObject.testArray.length).to.equal(0);
 		});
 		it('should not error if no events are given', function () {
-			var eventManager = eventManagerBuilder.buildEventManager();
+			var eventManager = eventManagerFactory.createEventManager();
 			var testCall = function () { eventManager.callEvent();};
 			expect(testCall).to.not.throw(Error);
 		});

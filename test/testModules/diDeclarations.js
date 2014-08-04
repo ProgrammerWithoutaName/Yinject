@@ -6,8 +6,8 @@ var getDependencyDeclarations = function (diContainer, diUtilities) {
     var pathOf = diUtilities.pathBuilder(__dirname);
 
     // prototypes
-    diContainer.forDependency('eventManagerBuilder').usePrototype('EventManagerBuilder').from(pathOf('../../js/utilities/EventManagerBuilder.js'));
-    diContainer.forDependency('propertyBuilder').usePrototype('PropertyBuilder').from(pathOf('../../js/utilities/PropertyBuilder.js'));
+    diContainer.forDependency('eventManagerBuilder').usePrototype('EventManagerFactory').from(pathOf('../../js/utilities/EventManagerFactory.js'));
+    diContainer.forDependency('propertyBuilder').usePrototype('PropertyFactory').from(pathOf('../../js/utilities/PropertyFactory.js'));
     diContainer.forDependency('cache').usePrototype('Cache').from(pathOf('/Cache.js'));
 
     // modules
