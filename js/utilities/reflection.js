@@ -2,32 +2,33 @@
 
 
 var Reflection = function ( owner, arrayUtilities) {
-	this.owner = owner;
-	this.ownerParents = [];
-	this.owner.prototype.__reflection = this;
+	this._owner = owner;
+	this._ownerParents = [];
+	this._owner.__reflection = this;
 	this._arrayUtilities = arrayUtilities;
 };
 
 Reflection.prototype.addParent = function (prototype) {
-	this.ownerParents.push(prototype);
+	this._ownerParents.push(prototype);
 };
 
-Reflection.prototype.getParentTypes = function (prototype, parentArray) {
+Reflection.prototype.getParentTypes = function (parentArray) {
 	var parentTypesToReturn = parentArray || [];
-	var i;
-	for(i = 0; i < this.ownerParents; i++) {
-		parentTypesToReturn.push(this.ownerParents[i]);
-		if(!!this.ownerParents[i].__reflection) {
-			this.ownerParents[i].__reflection.getParentTypes(prototype,parentTypesToReturn);
+
+	this._arrayUtilities.forEach(this._ownerParents, function(parent){
+		parentTypesToReturn.push(parent);
+		if(parent.__reflection) {
+			parent.__reflection.getParentTypes(parentTypesToReturn);
 		}
-	}
+	});
+
 	return parentTypesToReturn;
 };
 
-Reflection.prototype.isTypeOf = function (prototypeToMatch) {
+Reflection.prototype.isTypeOf = function (typeToMatch) {
 	var parents = this.getParentTypes();
-	parents.push(this.owner);
-	return this._arrayUtilities.valueExistsInArray(prototypeToMatch, parents);
+	parents.push(this._owner);
+	return this._arrayUtilities.valueExistsInArray(parents, typeToMatch);
 };
 
 var ReflectionFactory = function (arrayUtilities) {
