@@ -10,7 +10,14 @@ var buildPrototypeDependencyValidationUtility = function (baseDependencyValidati
 		}
 	};
 
-	var verifyPrototypeExists = function (dependencyInformation, module) {
+	var verifyConstructorIsFunction = function (dependencyInformation) {
+		if(typeof dependencyInformation.constructor() !== 'function') {
+			throw 'prototype ' + dependencyInformation.dependencyName() + "'s constructor is not a function.";
+		}
+	};
+
+	var verifyPrototypeExistsInModule = function (dependencyInformation) {
+		var module = baseDependencyValidationUtility.verifyModuleExists(dependencyInformation);
 		if (!module[dependencyInformation.prototypeName()]) {
 			throw "prototype '" + dependencyInformation.prototypeName() + "' was not found on given module '" + dependencyInformation.location() + "'.";
 		}
@@ -20,13 +27,17 @@ var buildPrototypeDependencyValidationUtility = function (baseDependencyValidati
 		}
 	};
 
+
 // Example
 //Declare.for('IFoo').usePrototype('Foo').from('place.js').inScope('singleton');
 
 	prototypeDependencyValidationUtility.verifyPrototypeDependencyInformation = function (dependencyInformation) {
-		var module = baseDependencyValidationUtility.verifyModuleExists(dependencyInformation);
-		verifyPrototypeName(dependencyInformation);
-		verifyPrototypeExists(dependencyInformation, module);
+		if(dependencyInformation.constructor()) {
+			verifyConstructorIsFunction(dependencyInformation);
+		} else {
+			verifyPrototypeName(dependencyInformation);
+			verifyPrototypeExistsInModule(dependencyInformation);
+		}
 	};
 
 	return prototypeDependencyValidationUtility;

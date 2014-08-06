@@ -17,6 +17,9 @@ var DependencyInformation = function (propertyFactory, dependencyTypes, scopeTyp
 		location: null,
 		constructor: null
 	};
+	this._scopeTypes = scopeTypes;
+	this._dependencyTypes = dependencyTypes;
+	this._propertyFactory = propertyFactory;
 
 	var self = this;
 	this.scopeType = buildProp(propertyFactory, this._diData, 'scopeType');
@@ -27,7 +30,7 @@ var DependencyInformation = function (propertyFactory, dependencyTypes, scopeTyp
 	this.location = buildProp(propertyFactory, this._diData, 'location');
 	this.constructor = buildProp(propertyFactory, this._diData, 'constructor');
 
-	this.scope.addSetEvent(function (sender, eventArgs) {
+	this.scopeType.addSetEvent(function (sender, eventArgs) {
 		if (!scopeTypes.typeIsValid(eventArgs.newValue)) {
 			throw 'given dependency scope is not valid for dependency ' + self.dependencyName() + '.';
 		}
@@ -50,7 +53,7 @@ var DependencyInformationFactory = function (propertyFactory,
 
 
 DependencyInformationFactory.prototype.createDependencyInformation = function () {
-	return new DependencyInformation (this._propertyFactory, this._dependencyTypes, this._scopeType)
+	return new DependencyInformation (this._propertyFactory, this._dependencyTypes, this._scopeTypes)
 };
 
 module.exports.DependencyInformationFactory = DependencyInformationFactory;

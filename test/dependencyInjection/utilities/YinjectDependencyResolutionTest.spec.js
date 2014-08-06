@@ -5,6 +5,9 @@ var scopeTypes = require(__dirname + '/../../../js/enumerations/scopeTypes.js').
 var chai = require('chai');
 var expect = chai.expect;
 
+// this is mostly used for debugging.
+// the GUID's make it easy to differentiate between different objects when
+// testing for scope resolution.
 var guid = (function() {
 	function s4() {
 		return Math.floor((1 + Math.random()) * 0x10000)
