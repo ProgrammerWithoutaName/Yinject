@@ -14,8 +14,8 @@ var prototypeUtilities = utilityBuilder.buildUtility(baseUtils.prototypeUtilitie
 var requireFrom = nodeUtilities.requireFromLocationBuilder(__dirname + '/js');
 
 //enumerations:
-var scopeTypes = nodeUtilities.requireEnum('scopeTypes.js');
-var dependencyTypes = nodeUtilities.requireEnum('dependencyTypes.js');
+var scopeTypes = nodeUtilities.requireEnum('scopeTypes.js').scopeTypes;
+var dependencyTypes = nodeUtilities.requireEnum('dependencyTypes.js').dependencyTypes;
 
 // Yinject
 var yinjectModule = requireFrom('/dependencyInjection/Yinject.js');

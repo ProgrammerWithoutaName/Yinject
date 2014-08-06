@@ -17,6 +17,7 @@ var buildYinjectDependencyBuilder = function ( nodeUtilities, yinjectFactory, sc
 
 	yinjectDependencyBuilder.createDependencyInjectorContainer = function (dependencyFileLocationsArray) {
 		var i;
+		dependencyFileLocationsArray = dependencyFileLocationsArray || [];
 		var container = yinjectFactory.createYinjector();
 
 		for (i = 0; i < dependencyFileLocationsArray.length; i++) {
@@ -25,6 +26,8 @@ var buildYinjectDependencyBuilder = function ( nodeUtilities, yinjectFactory, sc
 
 		return container;
 	};
+
+	return yinjectDependencyBuilder;
 
 };
 

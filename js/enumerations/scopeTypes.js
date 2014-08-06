@@ -1,7 +1,9 @@
+'use strict';
 var requestScope = 'request';
 var singletonScope = 'singleton';
 var defaultScope = 'default';
 
+var arrayUtilities = require(__dirname + '/../utilities/arrayUtilities.js');
 /*
  Scope:
  Default: creates new dependency each time
@@ -9,24 +11,17 @@ var defaultScope = 'default';
  Singleton: creates
  */
 
-var buildScopeTypes = function (scopeTypeRequirements) {
-	var arrayUtilities = scopeTypeRequirements.arrayUtilities;
-	var allValues = [requestScope, singletonScope, defaultScope];
-	var scopeTypes;
+var allValues = [requestScope, singletonScope, defaultScope];
+var scopeTypes;
 
-
-	scopeTypes = {
-		requestScope: requestScope,
-		singletonScope: singletonScope,
-		defaultScope: defaultScope,
-		allValues: allValues,
-		typeIsValid: function (givenScope) {
-			return arrayUtilities.valueExistsInArray(allValues, givenScope);
-		}
-	};
-
-	return scopeTypes;
-
+scopeTypes = {
+	requestScope: requestScope,
+	singletonScope: singletonScope,
+	defaultScope: defaultScope,
+	allValues: allValues,
+	typeIsValid: function (givenScope) {
+		return arrayUtilities.valueExistsInArray(allValues, givenScope);
+	}
 };
 
-module.exports.buildScopeTypes = buildScopeTypes;
+module.exports.scopeTypes = scopeTypes;

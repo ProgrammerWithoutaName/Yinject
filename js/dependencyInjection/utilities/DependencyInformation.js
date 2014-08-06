@@ -9,7 +9,7 @@ var buildProp = function (propertyFactory, itemOwner, watchedItemName) {
 
 var DependencyInformation = function (propertyFactory, dependencyTypes, scopeTypes) {
 	this._diData = {
-		scope: null,
+		scopeType: null,
 		dependencyType: null,
 		dependencyName: null,
 		dependencies: null,
@@ -19,7 +19,7 @@ var DependencyInformation = function (propertyFactory, dependencyTypes, scopeTyp
 	};
 
 	var self = this;
-	this.scope = buildProp(propertyFactory, this._diData, 'scope');
+	this.scopeType = buildProp(propertyFactory, this._diData, 'scopeType');
 	this.dependencyType = buildProp(propertyFactory, this._diData, 'dependencyType');
 	this.dependencyName = buildProp(propertyFactory, this._diData, 'dependencyName');
 	this.dependencies = buildProp(propertyFactory, this._diData, 'dependencies');

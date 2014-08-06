@@ -117,25 +117,71 @@ describe('Yinject', function() {
 		depResolution.resolve = function () {};
 		depResolution.container = {name:'container'};
 
-		var yinject = new yinjectModule.Yinject(depResolution, declaration, containerValidation);
+		var dependencyMock = function(name, prop, loc, construct) {
+			if(prop) this.type = 'prototype';
+			if(loc) this.type = 'module';
+			if(construct) this.type = 'custom';
+			var dependencyInformation = {
+				name:name,
+				prop:prop,
+				loc:loc,
+				construct:construct
+			};
+			this.getDependencyInformation = function () { return dependencyInformation;};
+		};
+
+		declaration.createPrototypeDependency = function (name, prop) { return new dependencyMock(name,prop); };
+		declaration.createModuleDependency = function (name, loc) { return new dependencyMock(name,undefined,loc); };
+		declaration.createCustomConstructorDependency = function (name, construct) { return new dependencyMock(name,undefined,undefined,construct);  };
+
+
 
 		describe('useModule', function () {
-			it('should attach itself to unchecked dependencies', function () {});
-			it('should return a moduleDependencyDeclaration', function () {});
+			var yinject = new yinjectModule.Yinject(depResolution, declaration, containerValidation);
+			var returnedItem = yinject.forDependency('fooA').useModule('location');
+
+			it('should attach itself to _uncheckedDeclarations', function () {
+				expect(yinject._uncheckedDeclarations.length).to.equal(1);
+			});
+			it('should return a moduleDependencyDeclaration', function () {
+				expect(returnedItem.type).to.equal('module');
+			});
+			it('should pass the location and name correctly', function () {
+				expect(returnedItem.getDependencyInformation().name).to.equal('fooA');
+				expect(returnedItem.getDependencyInformation().loc).to.equal('location');
+			});
 		});
 
 		describe('usePrototype', function () {
-			it('should attach itself to unchecked dependencies', function () {});
-			it('should return a prototypeDependencyDeclaration', function () {});
+			var yinject = new yinjectModule.Yinject(depResolution, declaration, containerValidation);
+			var returnedItem = yinject.forDependency('fooA').usePrototype('propName');
+
+			it('should attach itself to unchecked dependencies', function () {
+				expect(yinject._uncheckedDeclarations.length).to.equal(1);
+			});
+			it('should return a prototypeDependencyDeclaration', function () {
+				expect(returnedItem.type).to.equal('prototype');
+			});
+			it('should pass the location and name correctly', function () {
+				expect(returnedItem.getDependencyInformation().name).to.equal('fooA');
+				expect(returnedItem.getDependencyInformation().prop).to.equal('propName');
+			});
 		});
 
 		describe('useCustom', function () {
-			it('should attach itself to unchecked dependencies', function () {});
-			it('should return a customDependencyDeclaration', function () {});
-		});
+			var yinject = new yinjectModule.Yinject(depResolution, declaration, containerValidation);
+			var returnedItem = yinject.forDependency('fooA').useCustomConstructor('constructor');
 
-		it('should pass name on to useModule', function () {});
-		it('should pass name on to usePrototype', function () {});
-		it('should pass name on to useCustom', function () {});
+			it('should attach itself to unchecked dependencies', function () {
+				expect(yinject._uncheckedDeclarations.length).to.equal(1);
+			});
+			it('should return a prototypeDependencyDeclaration', function () {
+				expect(returnedItem.type).to.equal('custom');
+			});
+			it('should pass the location and name correctly', function () {
+				expect(returnedItem.getDependencyInformation().name).to.equal('fooA');
+				expect(returnedItem.getDependencyInformation().construct).to.equal('constructor');
+			});
+		});
 	});
 });
