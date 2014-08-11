@@ -22,3 +22,7 @@ var buildDependencyDeclarationUtility = function (prototypeDependencyDeclaration
 };
 
 module.exports.buildDependencyDeclaration = buildDependencyDeclarationUtility;
+
+
+// New style:
+// DependencyDeclaration.forDependency('foo').usePrototype('bar).from('place/somePlace.js').in.requestScope;

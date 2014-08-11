@@ -2,21 +2,40 @@
 
 var imports = require(__dirname + '/imports.js');
 
+/*
+ dependencyName,
+ prototype,
+ dependencyInformation,
+ dependencyValidationUtility,
+ dependencyTypes,
+ scopeTypes,
+ functionUtilities,
+ prototypeUtilities,
+ propertyBuilderFactory
+ */
+
 var ModuleDependencyDeclaration = function (dependencyName,
 	moduleName,
 	dependencyInformation,
 	dependencyValidationUtility,
 	dependencyTypes,
-	scopeTypes ) {
+	scopeTypes,
+	propertyBuilderFactory) {
 
-	this._dependencyInformation = dependencyInformation;
-	this._dependencyInformation.dependencyName(dependencyName);
-	this._dependencyInformation.location(moduleName);
-	this._dependencyInformation.dependencies([]);
-	this._dependencyInformation.dependencyType(dependencyTypes.moduleDependency);
-	this._dependencyInformation.scope(scopeTypes.defaultScope);
+	ModuleDependencyDeclaration.__base['BaseDependencyDeclaration'] (this,
+		dependencyName,
+		propertyBuilderFactory,
+		dependencyValidationUtility,
+		dependencyInformation,
+		scopeTypes);
 
-	this._dependencyValidationUtility = dependencyValidationUtility;
+	this._dependencyInformation.location = moduleName;
+	this._dependencyInformation.dependencyType = dependencyTypes.moduleDependency;
+	var self = this;
+	this._propertyBuilder.addGetterProperty('dependencyInformation', function () {
+		self.populate();
+		return self._dependencyInformation;
+	});
 };
 
 ModuleDependencyDeclaration.prototype.populate = function () {
@@ -28,6 +47,7 @@ ModuleDependencyDeclaration.prototype.populate = function () {
 
 var ModuleDependencyDeclarationFactory = function (dependencyInformationFactory,
 												   	dependencyValidationUtility,
+													_propertyBuilderFactory,
 													dependencyTypes,
 													scopeTypes) {
 	this._dependencyInformationFactory = dependencyInformationFactory;
@@ -36,7 +56,7 @@ var ModuleDependencyDeclarationFactory = function (dependencyInformationFactory,
 	this._scopeTypes = scopeTypes;
 };
 
-ModuleDependencyDeclarationFactory.createModuleDependencyDeclaration = function (dependencyName, moduleName) {
+ModuleDependencyDeclarationFactory.prototype.createModuleDependencyDeclaration = function (dependencyName, moduleName) {
 	return new ModuleDependencyDeclaration(dependencyName,
 		moduleName,
 		this._dependencyInformationFactory.createDependencyInformation(),
@@ -45,7 +65,9 @@ ModuleDependencyDeclarationFactory.createModuleDependencyDeclaration = function 
 		this.scopeTypes);
 };
 
-imports.extend(ModuleDependencyDeclaration, imports.BaseDependencyDeclaration);
+//define the inheritance for Module Dependency Declaration.
+imports.inheritenceUtilities.prototypeOf('ModuleDependencyDeclaration',ModuleDependencyDeclaration).
+	extends(imports.baseDependencyDeclarationContainer);
 
 
 

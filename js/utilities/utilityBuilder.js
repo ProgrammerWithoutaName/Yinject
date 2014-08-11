@@ -2,49 +2,67 @@
 // these utilities may require other utilities.
 
 var nodeUtilities = require(__dirname + '/nodeUtilities.js').buildNodeUtilities();
-var utilities = ['arrayUtility, prototypeUtility, nodeUtility, functionUtility'];
+var utilities = ['prototypeUtility, nodeUtility, functionUtility, inheritanceUtility'];
 
 var buildNodeUtilities = function () {
 	return nodeUtilities;
 };
 
-var buildArrayUtilities = function () {
-	return nodeUtilities.requireUtility('arrayUtilities.js').buildArrayUtilities();
-};
-
-var buildReflectionFactory = function () {
-	var ReflectionFactory = nodeUtilities.requireUtility('reflection.js').ReflectionFactory;
-	var arrayUtility = buildArrayUtilities();
-	return new ReflectionFactory(arrayUtility);
-};
-
 var buildPrototypeUtilities = function () {
-	var reflectionFactory = buildReflectionFactory();
-	var prototypeUtilitiesModule = nodeUtilities.requireUtility('prototypeUtilities.js');
-	return prototypeUtilitiesModule.buildPrototypeUtilities(reflectionFactory);
+	return nodeUtilities.requireUtility('prototypeUtilities.js');
 };
 
-var buildFunctionReflection = function (arrayUtilities) {
+var buildFunctionReflection = function () {
 	// array Utilities
 	var functionReflectionModule = nodeUtilities.requireUtility('functionReflection.js');
-	arrayUtilities = arrayUtilities || buildArrayUtilities();
 
-	return functionReflectionModule.buildFunctionReflectionUtility(arrayUtilities)
+	return functionReflectionModule.buildFunctionReflectionUtility();
 };
 
 var buildFunctionUtilities = function () {
-	// functionReflection, array Utilities
-	var arrayUtilities = buildArrayUtilities();
-	var functionReflection = buildFunctionReflection(arrayUtilities);
+	var functionReflection = buildFunctionReflection();
 	var functionUtilityModule = nodeUtilities.requireUtility('functionUtilities.js');
-	return functionUtilityModule.buildFunctionUtilities(functionReflection,arrayUtilities);
+	return functionUtilityModule.buildFunctionUtilities(functionReflection);
+};
+
+var buildPropertyBuilderFactory = function () {
+	var propertyBuilderModule = nodeUtilities.requireUtility('propertyBuilder.js');
+	return new propertyBuilderModule.PropertyBuilderFactory();
+};
+
+var buildMethodExtensionUtility = function (functionUtilities, propertyBuilderFactory) {
+	functionUtilities = functionUtilities || buildFunctionUtilities();
+	propertyBuilderFactory = propertyBuilderFactory || buildPropertyBuilderFactory();
+
+	var methodExtensionUtilityModule = nodeUtilities.requireUtility('/inheritance/MethodExtensionUtility.js');
+	return  new methodExtensionUtilityModule.MethodExtensionUtility(functionUtilities,propertyBuilderFactory);
+};
+
+
+
+var buildInheritanceBuilderFactory = function (methodExtensionUtility) {
+	methodExtensionUtility = methodExtensionUtility || buildMethodExtensionUtility();
+	var inheritanceBuilderModule = nodeUtilities.requireUtility('/inheritance/InheritanceBuilder.js');
+
+	return new inheritanceBuilderModule.InheritanceBuilderFactory(methodExtensionUtility);
+};
+
+var buildInheritanceUtilities = function () {
+	var inheritanceUtilitiesModule = nodeUtilities.requireUtility('/inheritance/InheritanceUtilities.js');
+	var functionUtilities = buildFunctionUtilities();
+	var methodExtensionUtility = buildMethodExtensionUtility(functionUtilities);
+	var inheritanceBuilderFactory = buildInheritanceBuilderFactory(methodExtensionUtility);
+
+	return new inheritanceUtilitiesModule.InheritanceUtilities(methodExtensionUtility,
+		functionUtilities,
+		inheritanceBuilderFactory);
 };
 
 var utilityBuilder = {
 	nodeUtilities: buildNodeUtilities,
-	arrayUtilities: buildArrayUtilities,
 	prototypeUtilities: buildPrototypeUtilities,
-	functionUtilities: buildFunctionUtilities
+	functionUtilities: buildFunctionUtilities,
+	inheritanceUtilities: buildInheritanceUtilities
 };
 
 var buildUtility = function (utilityName) {
@@ -53,8 +71,8 @@ var buildUtility = function (utilityName) {
 
 module.exports.buildUtility = buildUtility;
 module.exports.utilities = {
-	arrayUtilities: 'arrayUtilities',
 	functionUtilities:'functionUtilities',
 	prototypeUtilities:'prototypeUtilities',
-	nodeUtilities:'nodeUtilities'
+	nodeUtilities:'nodeUtilities',
+	inheritanceUtilities:' inheritanceUtilities'
 };

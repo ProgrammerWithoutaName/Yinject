@@ -18,7 +18,7 @@ var buildRequirementsValidationUtility = function (arrayUtilities) {
 
 		// populate the requirements
 		arrayUtilities.forEach(declarationArray, function (declaration) {
-			arrayUtilities.forEach(declaration.dependencies(), function (dependency) {
+			arrayUtilities.forEach(declaration.dependencies, function (dependency) {
 				if (requirements[dependency] === undefined) {
 					requirements[dependency] = {
 						name: dependency,
@@ -26,7 +26,7 @@ var buildRequirementsValidationUtility = function (arrayUtilities) {
 					};
 					requirementsArray.push(requirements[dependency]);
 				}
-				requirements[dependency].requiredBy.push(declaration.dependencyName());
+				requirements[dependency].requiredBy.push(declaration.dependencyName);
 			});
 		});
 

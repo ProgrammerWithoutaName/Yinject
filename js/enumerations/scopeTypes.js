@@ -3,7 +3,6 @@ var requestScope = 'request';
 var singletonScope = 'singleton';
 var defaultScope = 'default';
 
-var arrayUtilities = require(__dirname + '/../utilities/arrayUtilities.js');
 /*
  Scope:
  Default: creates new dependency each time
@@ -20,7 +19,7 @@ scopeTypes = {
 	defaultScope: defaultScope,
 	allValues: allValues,
 	typeIsValid: function (givenScope) {
-		return arrayUtilities.valueExistsInArray(allValues, givenScope);
+		return (allValues.lastIndexOf(givenScope) > -1);
 	}
 };
 

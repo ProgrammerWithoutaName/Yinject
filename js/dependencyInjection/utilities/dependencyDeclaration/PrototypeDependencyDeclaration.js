@@ -8,40 +8,54 @@ var PrototypeDependencyDeclaration = function (dependencyName,
 												dependencyTypes,
 												scopeTypes,
 												functionUtilities,
-												prototypeUtilities) {
+												prototypeUtilities,
+												propertyBuilderFactory) {
+	PrototypeDependencyDeclaration.__base['BaseDependencyDeclaration'] (this,
+		dependencyName,
+		propertyBuilderFactory,
+		dependencyValidationUtility,
+		dependencyInformation,
+		scopeTypes);
 
-	this._dependencyValidationUtility = dependencyValidationUtility;
+	// dependencies specific to prototype
 	this._functionUtilities = functionUtilities;
 	this._prototypeUtilities = prototypeUtilities;
 
-	this._dependencyInformation = dependencyInformation;
-	this._dependencyInformation.dependencyName(dependencyName);
+	// initial info specific to prototype
+	this._dependencyInformation.dependencyType = dependencyTypes.prototypeDependency;
 
-	this._dependencyInformation.dependencyType(dependencyTypes.prototypeDependency);
-	this._dependencyInformation.scope(scopeTypes.defaultScope);
 	if(typeof prototype === 'function') {
-		this._dependencyInformation.constructor(prototype);
+		this._dependencyInformation.constructorFunction = prototype;
 	} else if(typeof prototype === 'string') { // ???? can I do this?
-		this._dependencyInformation.prototypeName(prototype);
+		this._dependencyInformation.prototypeName = prototype;
 	}
 
+	var self = this;
+	this._propertyBuilder.addGetterProperty('dependencyInformation', function () {
+		self.populate();
+		return self._dependencyInformation;
+	});
 };
 
+/*
+ ### populate()
+ takes information given and populates the rest of dependencyInformation.
+ */
 PrototypeDependencyDeclaration.prototype.populate = function () {
-	if(this._dependencyInformation.constructor() === undefined) {
-		var module = require(this._dependencyInformation.location());
-		this._dependencyInformation.constructor(module[this._dependencyInformation.prototypeName()]);
+	if(this._dependencyInformation.constructorFunction === undefined) {
+		var module = require(this._dependencyInformation.location);
+		this._dependencyInformation.constructorFunction = module[this._dependencyInformation.prototypeName];
 	}
 	this._createBuildFromConstructor();
 };
 
 PrototypeDependencyDeclaration.prototype._createBuildFromConstructor = function () {
 	var self = this;
-	this._dependencyInformation.dependencies(self._functionUtilities.getFunctionArguments(self._dependencyInformation.constructor()));
+	this._dependencyInformation.dependencies = self._functionUtilities.getFunctionArguments(self._dependencyInformation.constructor);
 
 	this._dependencyInformation.build = function (dependencies) {
-		return self._prototypeUtilities.constructObjectWithArguments(self._dependencyInformation.constructor(),
-			self._functionUtilities.buildArguments(self._dependencyInformation.dependencies(), dependencies));
+		return self._prototypeUtilities.constructObjectWithArguments(self._dependencyInformation.constructorFunction,
+			self._functionUtilities.buildArguments(self._dependencyInformation.dependencies, dependencies));
 	};
 };
 
@@ -60,7 +74,7 @@ var PrototypeDependencyDeclarationFactory = function (dependencyInformationFacto
 	this._prototypeUtilities = prototypeUtilities;
 };
 
-PrototypeDependencyDeclarationFactory.createPrototypeDependencyDeclaration = function (dependencyName, prototype) {
+PrototypeDependencyDeclarationFactory.prototype.createPrototypeDependencyDeclaration = function (dependencyName, prototype) {
 	return new PrototypeDependencyDeclaration (dependencyName
 		, prototype
 		, this._dependencyInformationFactory.createDependencyInformation()
@@ -71,10 +85,10 @@ PrototypeDependencyDeclarationFactory.createPrototypeDependencyDeclaration = fun
 		, this._prototypeUtilities);
 };
 
-imports.extend(PrototypeDependencyDeclaration,
-	imports.LocationBasedDependencyDeclaration,
-	imports.BaseDependencyDeclaration);
-
+//define inheritance for PrototypeDependencyDeclaration.
+imports.prototypeOf('PrototypeDependencyDeclaration',PrototypeDependencyDeclaration).
+	extends(imports.baseDependencyDeclarationContainer,
+			imports.locationBasedDependencyDeclarationContainer);
 
 module.exports.PrototypeDependencyDeclarationFactory = PrototypeDependencyDeclarationFactory;
 module.exports.PrototypeDependencyDeclaration = PrototypeDependencyDeclaration;

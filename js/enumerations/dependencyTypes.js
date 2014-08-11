@@ -3,7 +3,6 @@ var prototypeDependency = 'prototype';
 var moduleDependency = 'module';
 var customDependency = 'custom';
 
-var arrayUtilities = require(__dirname + '/../utilities/arrayUtilities.js');
 /*
  Dependency Types:
  prototype: this is a prototype. when requested, we create a new one each time. Chances are, you will either need a factory/builder unless you only need a single type.
@@ -20,7 +19,7 @@ dependencyTypes = {
 	customDependency: customDependency,
 	allValues: allValues,
 	typeIsValid: function (givenType) {
-		return arrayUtilities.valueExistsInArray(allValues, givenType);
+		return (allValues.lastIndexOf(givenType) > -1);
 	}
 };
 

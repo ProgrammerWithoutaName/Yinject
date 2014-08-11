@@ -11,7 +11,7 @@ var buildDependencyValidationUtility = function (dependencyTypes,
 
 		baseDependencyValidationUtility.verifyBaseDependencyInformation(dependencyInformation);
 
-		switch (dependencyInformation.dependencyType()) {
+		switch (dependencyInformation.dependencyType) {
 			case dependencyTypes.prototypeDependency:
 				prototypeValidationUtility.verifyPrototypeDependencyInformation(dependencyInformation);
 				break;

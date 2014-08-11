@@ -7,7 +7,7 @@ var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m;
 var FN_ARG_SPLIT = /,/;
 
 
-var buildFunctionReflectionUtility = function(arrayUtilities) {
+var buildFunctionReflectionUtility = function() {
 
 	var functionReflectionUtility = {};
 
@@ -21,7 +21,7 @@ var buildFunctionReflectionUtility = function(arrayUtilities) {
 
 	var createArgumentArray = function(argumentDeclarationText) {
 		var args = [];
-		arrayUtilities.forEach(argumentDeclarationText.split(FN_ARG_SPLIT), function (arg) {
+		argumentDeclarationText.split(FN_ARG_SPLIT).forEach(function (arg) {
 			if (arg !== '') {
 				args.push(arg.trim());
 			}

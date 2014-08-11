@@ -4,16 +4,23 @@
 // this is only meant for getting utilities that can't be injected.
 var utilityBuilder = require(__dirname + '/../../../utilities/utilityBuilder.js');
 var nodeUtilities = utilityBuilder.buildUtility(utilityBuilder.utilities.nodeUtilities);
-var prototypeUtilities = utilityBuilder.buildUtility(utilityBuilder.utilities.prototypeUtilities);
 
 var requireFrom = nodeUtilities.requireFromLocationBuilder(__dirname);
 
 // Types and functions required.
 var BaseDependencyDeclaration = requireFrom('BaseDependencyDeclaration.js').BaseDependencyDeclaration;
 var LocationBasedDependencyDeclaration = requireFrom('LocationBasedDependencyDeclaration.js').LocationBasedDependencyDeclaration;
-var extend = prototypeUtilities.extend;
 
+// Exports
+module.exports.inheritenceUtilities = utilityBuilder.buildUtility(utilityBuilder.utilities.inheritanceUtilities);
 
-module.exports.BaseDependencyDeclaration = BaseDependencyDeclaration;
-module.exports.LocationBasedDependencyDeclaration = LocationBasedDependencyDeclaration;
-module.exports.extend = extend;
+module.exports.baseDependencyDeclarationContainer = {
+	name: 'BaseDependencyDeclaration',
+	givenType: BaseDependencyDeclaration
+};
+
+module.exports.locationBasedDependencyDeclarationContainer = {
+	name: 'LocationBasedDependencyDeclaration',
+	givenType: LocationBasedDependencyDeclaration
+};
+

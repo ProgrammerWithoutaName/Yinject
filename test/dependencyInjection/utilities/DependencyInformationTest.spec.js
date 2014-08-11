@@ -12,14 +12,19 @@ var expect = chai.expect;
 describe('DependencyInformationFactory', function () {
 	var scopeTypes = { _name: 'scopeTypes'};
 	var dependencyTypes = {_name: 'dependencyTypes'};
-	var propertyFactory = {_name: 'propertyFactory',
-	createProperty: function(){
-		return {addSetEvent:function(){}, addGetEvent:function(){}};
+	var propertyBuilderFactory = {_name: 'propertyBuilderFactory',
+	createPropertyBuilder: function(){
+		return {
+			addProperty: function () {},
+			addGetterProperty: function () {},
+			addSetterProperty: function () {},
+			lockAllProperties: function () {}
+		}
 	}};
 
 	var DependencyInformationFactory = dependencyInformationModule.DependencyInformationFactory;
 	scopeTypes._name = 'scopeTypes';
-	var factory = new DependencyInformationFactory(propertyFactory,scopeTypes,dependencyTypes);
+	var factory = new DependencyInformationFactory(propertyBuilderFactory,scopeTypes,dependencyTypes);
 
 	describe('createDependencyInformation', function () {
 		it('should pass the correct dependencies when building a new DependencyInformation', function () {
@@ -35,3 +40,5 @@ describe('DependencyInformationFactory', function () {
 	});
 });
 //DependencyInformation is pretty much just a data-model. Not sure what I could do test wise.
+// Test that it's checking scopeType and dependencyType correctly
+// TODO: test that scopeType and dependencyType are being checked on set.

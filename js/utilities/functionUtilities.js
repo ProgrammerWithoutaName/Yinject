@@ -1,11 +1,11 @@
 
 
-var buildFunctionUtilities = function(functionReflection, arrayUtilities) {
+var buildFunctionUtilities = function(functionReflection) {
 	var functionUtilities = {};
 
 	functionUtilities.buildArguments = function (argumentDeclarationArray, argumentValuesObject) {
 		var args = [];
-		arrayUtilities.forEach(argumentDeclarationArray, function (declaration) {
+		argumentDeclarationArray.forEach(function (declaration) {
 			args.push(argumentValuesObject[declaration]);
 		});
 		return args;

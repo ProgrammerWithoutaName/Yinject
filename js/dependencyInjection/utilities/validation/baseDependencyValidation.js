@@ -7,31 +7,31 @@ var buildBaseDependencyValidationUtility = function (scopeTypes, dependencyTypes
 	dependencyValidationUtility.verifyModuleExists = function (dependencyInformation) {
 		var module;
 		try {
-			module = require(dependencyInformation.location());
+			module = require(dependencyInformation.location);
 		} catch (e) {
-			throw e + " for dependency '" + dependencyInformation.dependencyName() + "'";
+			throw e + " for dependency '" + dependencyInformation.dependencyName + "'";
 		}
 		return module;
 	};
 
 	var verifyDeclarationNameExists = function (dependencyInformation) {
-		if (!dependencyInformation.dependencyName()) {
-			throw "dependency name doesn't exist for module " + dependencyInformation.location();
+		if (!dependencyInformation.dependencyName) {
+			throw "dependency name doesn't exist for module " + dependencyInformation.location;
 		}
 	};
 
 	var verifyDependencyTypeExists = function (dependencyInformation) {
-		if (dependencyTypes.typeIsValid(dependencyInformation.dependencyType())) {
+		if (dependencyTypes.typeIsValid(dependencyInformation.dependencyType)) {
 			return;
 		}
-		throw 'dependency Type ' + dependencyInformation.dependencyType() + ' is invalid for dependency ' + dependencyInformation.dependencyName();
+		throw 'dependency Type ' + dependencyInformation.dependencyType + ' is invalid for dependency ' + dependencyInformation.dependencyName;
 	};
 
 	var verifyScopeExists = function (dependencyInformation) {
-		if (scopeTypes.typeIsValid(dependencyInformation.scope())) {
+		if (scopeTypes.typeIsValid(dependencyInformation.scopeType)) {
 			return;
 		}
-		throw 'dependency Type ' + dependencyInformation.scope() + ' is invalid for dependency ' + dependencyInformation.dependencyName();
+		throw 'dependency Type ' + dependencyInformation.scopeType+ ' is invalid for dependency ' + dependencyInformation.dependencyName;
 	};
 
 

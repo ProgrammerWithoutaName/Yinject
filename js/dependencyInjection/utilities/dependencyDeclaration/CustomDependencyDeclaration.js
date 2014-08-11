@@ -7,17 +7,28 @@ var CustomDependencyDeclaration = function (dependencyName,
 											constructor,
 											dependencyInformation,
 											dependencyValidationUtility,
+											functionUtilities,
+											propertyBuilderFactory,
 											dependencyTypes,
-											scopeTypes,
-											functionUtilities) {
-	this._dependencyInformation = dependencyInformation;
-	this._dependencyInformation.dependencyName(dependencyName);
-	this._dependencyInformation.constructor(constructor);
-	this._dependencyInformation.dependencyType(dependencyTypes.customDependency);
-	this._dependencyInformation.scope(scopeTypes.defaultScope);
+											scopeTypes) {
+	CustomDependencyDeclaration.__base['BaseDependencyDeclaration'] (this,
+		dependencyName,
+		propertyBuilderFactory,
+		dependencyValidationUtility,
+		dependencyInformation,
+		scopeTypes);
+
+
+	this._dependencyInformation.constructorFunction = constructor;
+	this._dependencyInformation.dependencyType = dependencyTypes.customDependency;
 
 	this._functionUtilities = functionUtilities;
-	this._dependencyValidationUtility = dependencyValidationUtility;
+
+	var self = this;
+	this._propertyBuilder.addGetterProperty('dependencyInformation', function () {
+		self.populate();
+		return self._dependencyInformation;
+	});
 };
 
 CustomDependencyDeclaration.prototype.populate = function () {
@@ -62,9 +73,10 @@ CustomDependencyDeclarationFactory.createCustomDependencyDeclaration = function 
 		this._functionUtilities )
 };
 
-imports.extend(CustomDependencyDeclaration,
-	imports.LocationBasedDependencyDeclaration,
-	imports.BaseDependencyDeclaration);
+
+imports.inheritenceUtilities.prototypeOf('CustomDependencyDeclaration',CustomDependencyDeclaration).
+	extends(imports.baseDependencyDeclarationContainer,
+			imports.locationBasedDependencyDeclarationContainer);
 
 module.exports.CustomDependencyDeclarationFactory = CustomDependencyDeclarationFactory;
 module.exports.CustomDependencyDeclaration = CustomDependencyDeclaration;

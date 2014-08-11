@@ -3,25 +3,10 @@ var prototypeUtilitiesModule = require(__dirname + '/../../js/utilities/prototyp
 
 var expect = chai.expect;
 
-
-var ParentObject = function() {};
-
-ParentObject.prototype.foo = function () {
-	this.fooPassed = true;
-};
-
-ParentObject.prototype.overriddenFuction = function () {
-	this.override = false;
-};
-
 var ChildObject = function (test1, test2, test3)  {
 	this.test1 = test1;
 	this.test2 = test2;
 	this.test3 = test3;
-};
-
-ChildObject.prototype.bar = function () {
-	this.barPassed = true;
 };
 
 ChildObject.prototype.overriddenFunction = function () {
@@ -31,47 +16,6 @@ ChildObject.prototype.overriddenFunction = function () {
 var testFunctionValues = ['foo',42,'something'];
 
 describe('prototypeUtilities', function(){
-	describe('extend', function(){
-
-		var reflectionFactory = {};
-		var reflection = {};
-		reflectionFactory.createReflection = function(){ return reflection;};
-		reflection.addParent = function(){};
-		reflection.isTypeOf = function(){return false};
-
-		var extend = prototypeUtilitiesModule.buildPrototypeUtilities(reflectionFactory).extend;
-
-		extend(ChildObject, ParentObject);
-		var child = new ChildObject();
-		child.foo();
-		child.bar();
-		child.overriddenFunction();
-
-		it('should extend the parent objects prototype to the child objects prototype', function(){
-			expect(child.fooPassed).to.be.true;
-		});
-
-		it('should keep child functions original functions', function () {
-			expect(child.barPassed).to.be.true;
-		});
-
-		it('should use child functions when available even if parent functions are defined', function () {
-			expect(child.override).to.be.true;
-		});
-
-		it('should not extend the same type twice', function () {
-			reflection.isTypeOf = function () { return true;};
-			var newChildType = function(){};
-			newChildType.prototype.foo = function() {this.parentWasAdded = false;};
-			extend(newChildType, ParentObject);
-
-			var test = new newChildType();
-			test.foo();
-
-			expect(test.parentWasAdded).to.be.false;
-
-		});
-	});
 
 	/*var buildArguments = function (argumentDeclarationArray, argumentValuesObject) {
 		var args = [];
@@ -82,11 +26,9 @@ describe('prototypeUtilities', function(){
 	};*/
 
 
-
 	describe('constructObjectWithArguments', function () {
-		var constructObjectWithArguments = prototypeUtilitiesModule.buildPrototypeUtilities({}).constructObjectWithArguments;
+		var constructObjectWithArguments = prototypeUtilitiesModule.constructObjectWithArguments;
 		var returnedObject = constructObjectWithArguments(ChildObject, testFunctionValues);
-		returnedObject.bar();
 
 		it('should expect correct values to be given to the constructor', function() {
 			expect(returnedObject.test1).to.equal(testFunctionValues[0]);

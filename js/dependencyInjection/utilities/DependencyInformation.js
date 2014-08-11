@@ -1,59 +1,74 @@
 "use strict";
 
-var buildProp = function (propertyFactory, itemOwner, watchedItemName) {
-	return propertyFactory.createProperty(
-		function () { return itemOwner[watchedItemName]; },
-		function (value) { itemOwner[watchedItemName] = value; }
-	);
+var generateErrorMessage = function (variableName, value, dependencyName) {
+	return "value '" + value + "' given for '" + variableName +"' is invalid for dependency '" + dependencyName + "'";
 };
 
-var DependencyInformation = function (propertyFactory, dependencyTypes, scopeTypes) {
-	this._diData = {
-		scopeType: null,
-		dependencyType: null,
-		dependencyName: null,
-		dependencies: null,
-		prototypeName: null,
-		location: null,
-		constructor: null
-	};
+var DependencyInformation = function (propertyBuilderFactory, dependencyTypes, scopeTypes) {
+
 	this._scopeTypes = scopeTypes;
 	this._dependencyTypes = dependencyTypes;
-	this._propertyFactory = propertyFactory;
+	this._propertyBuilder = propertyBuilderFactory.createPropertyBuilder(this);
+
+	// defaults with getter/setter.
+	this._addProperty('dependencyName');
+	this._addProperty('dependencies');
+	this._addProperty('prototypeName');
+	this._addProperty('location');
 
 	var self = this;
-	this.scopeType = buildProp(propertyFactory, this._diData, 'scopeType');
-	this.dependencyType = buildProp(propertyFactory, this._diData, 'dependencyType');
-	this.dependencyName = buildProp(propertyFactory, this._diData, 'dependencyName');
-	this.dependencies = buildProp(propertyFactory, this._diData, 'dependencies');
-	this.prototypeName = buildProp(propertyFactory, this._diData, 'prototypeName');
-	this.location = buildProp(propertyFactory, this._diData, 'location');
-	this.constructor = buildProp(propertyFactory, this._diData, 'constructor');
 
-	this.scopeType.addSetEvent(function (sender, eventArgs) {
-		if (!scopeTypes.typeIsValid(eventArgs.newValue)) {
-			throw 'given dependency scope is not valid for dependency ' + self.dependencyName() + '.';
+	// types that can be validated on set.
+	this._addPropertyWithValidation('scopeTypes', function(value) {
+		if(!scopeTypes.typeIsValid(value)) {
+			throw generateErrorMessage('scopeType', value, self.dependencyName)
 		}
 	});
 
-	this.dependencyType.addSetEvent(function (sender, eventArgs) {
-		if (!dependencyTypes.typeIsValid(eventArgs.newValue)) {
-			throw 'given dependency type is not valid.';
+	this._addPropertyWithValidation('constructorFunction',  function (value) {
+		if(typeof value !== 'function') {
+			throw generateErrorMessage('constructorFunction', typeof value, self.dependencyName);
 		}
 	});
+
+	this._addPropertyWithValidation('dependencyType', function(value) {
+		if(!scopeTypes.typeIsValid(value)) {
+			throw generateErrorMessage('dependencyType', value, self.dependencyName);
+		}
+	});
+
+	// don't need it anymore.
+	this._propertyBuilder.lockAllProperties();
+	delete this._propertyBuilder;
+
 };
 
-var DependencyInformationFactory = function (propertyFactory,
+DependencyInformation.prototype._addPropertyWithValidation = function(name, validationFunction) {
+	var backingValue = null;
+
+	this._propertyBuilder.addGetterProperty(name, function () {return backingValue;});
+	this._propertyBuilder.addSetterProperty(name,  function (value) {
+		validationFunction(value);
+		backingValue = value;
+	});
+
+};
+
+DependencyInformation.prototype._addProperty = function(name) {
+	this[name] = this._propertyBuilder.addProperty(name,true);
+};
+
+var DependencyInformationFactory = function (propertyBuilderFactory,
 											scopeTypes,
 											dependencyTypes) {
-	this._propertyFactory = propertyFactory;
+	this._propertyBuilderFactory = propertyBuilderFactory;
 	this._scopeTypes = scopeTypes;
 	this._dependencyTypes = dependencyTypes;
 };
 
 
 DependencyInformationFactory.prototype.createDependencyInformation = function () {
-	return new DependencyInformation (this._propertyFactory, this._dependencyTypes, this._scopeTypes)
+	return new DependencyInformation (this._propertyBuilderFactory, this._dependencyTypes, this._scopeTypes)
 };
 
 module.exports.DependencyInformationFactory = DependencyInformationFactory;

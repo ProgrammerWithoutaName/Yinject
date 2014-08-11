@@ -5,12 +5,12 @@ var buildCustomDependencyValidationUtility = function () {
 	var customDependencyInformationUtility = {};
 
 	var verifyConstructorExists = function (dependencyInformation) {
-		if (!dependencyInformation.constructor()) {
-			throw "constructor missing for custom dependency '" + dependencyInformation.dependencyName() + ",.";
+		if (!dependencyInformation.constructorFunction) {
+			throw "constructor missing for custom dependency '" + dependencyInformation.dependencyName + "'.";
 		}
 
-		if (typeof dependencyInformation.constructor() !== 'function') {
-			throw "constructor given for '" + dependencyInformation.dependencyName() + "' is not a function.";
+		if (typeof dependencyInformation.constructorFunction !== 'function') {
+			throw "constructor given for '" + dependencyInformation.dependencyName + "' is not a function.";
 		}
 	};
 
