@@ -163,48 +163,51 @@ InheritanceBuilder.prototype.extend = function(types) {
 	return this;
 };
 
-InheritanceBuilder.prototype._extendSingle = function (parentContainer) {
+InheritanceBuilder.prototype._extendSingle = function (parentTypeContainer) {
 	// make the type inheritable if it isn't already.
 
 	this._confirmMethodInit(this.childContainer.constructorContainer);
-	this._confirmMethodInit(parentContainer.constructorContainer);
+	this._confirmMethodInit(parentTypeContainer.constructorContainer);
 
-	if(this.childType.isTypeOf(parentContainer.givenType)) {
+	if(this.childType.isTypeOf(parentTypeContainer.givenType)) {
 		return;
 	}
 
-	this._extendBaseMethods(parentContainer);
+	this.childContainer.givenType.extendMethod(parentTypeContainer.givenType, parentTypeContainer.name);
+
+	this._extendBaseMethods(parentTypeContainer);
 };
 
-InheritanceBuilder.prototype._extendBaseMethods = function(parentContainer) {
-	this._confirmMethodInit(parentContainer);
+InheritanceBuilder.prototype._extendBaseMethods = function(parentTypeContainer) {
+	this._confirmMethodInit(parentTypeContainer.constructorContainer);
 	var childProto = this.childContainer.proto;
-	var parentProto = parentContainer.proto;
+	var parentProto = parentTypeContainer.proto;
 
 	// we intentionally iterate over the constructor and pull it in as well.
 	// since it exists, we also want the ability to call parent constructors. Same logic applies.
 	for(var item in parentProto) {
 		if (!childProto.hasOwnProperty(item)) {
 			childProto[item] = parentProto[item];
-		} else if (typeof childProto[item] === 'function') {
-			this._addMethodParent(item,parentContainer);
+		} else if (typeof childProto[item] === 'function' && item !== 'constructor') {
+			this._addMethodParent(item,parentTypeContainer);
 		}
 	}
 };
 
 InheritanceBuilder.prototype._addMethodParent = function (functionName,parentContainer) {
+
 	this._confirmMethodInit(this.childContainer.getContainerForMethod(functionName));
 	this._confirmMethodInit( parentContainer.getContainerForMethod(functionName));
 
 	// ONLY add method parent if the child actually owns the function given.
-	if(this.childContainer.proto[functionName].__ownerName === this.childContainer.name) {
+	if(this.childContainer.proto[functionName].__meta.ownerName === this.childContainer.name) {
 		this.childContainer.proto[functionName].extendMethod(parentContainer.proto[functionName]);
 	}
 };
 
 InheritanceBuilder.prototype._confirmMethodInit = function(methodContainer) {
-	if(!methodContainer.method.__name) {
-		this._methodExtensionUtility.initInheritableMethod(methodContainer.name,methodContainer.method, methodContainer.owner);
+	if(!methodContainer.method.__meta) {
+		this._methodExtensionUtility.initInheritableMethod(methodContainer.method, methodContainer.name, methodContainer.owner);
 	}
 };
 

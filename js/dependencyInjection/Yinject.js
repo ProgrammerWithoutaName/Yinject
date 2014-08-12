@@ -17,7 +17,6 @@ var Yinject = function (yinjectDependencyResolution, dependencyDeclarationUtilit
 
 Yinject.prototype._pushDeclaration = function (dependency) {
     this._uncheckedDeclarations.push(dependency);
-    this._declarations.push(dependency.getDependencyInformation());
 };
 
 Yinject.prototype._validateDependencyContainer = function () {
@@ -29,7 +28,9 @@ Yinject.prototype._compileAllUncheckedDeclarations = function () {
     var i;
     if (this._uncheckedDeclarations.length > 0) {
         for (i = 0; i < this._uncheckedDeclarations.length; i++) {
+
             this._resolver.add(this._uncheckedDeclarations[i]);
+			this._declarations.push(this._uncheckedDeclarations[i].dependencyInformation);
         }
         this._uncheckedDeclarations = [];
 

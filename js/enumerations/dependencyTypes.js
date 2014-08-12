@@ -19,7 +19,7 @@ dependencyTypes = {
 	customDependency: customDependency,
 	allValues: allValues,
 	typeIsValid: function (givenType) {
-		return (allValues.lastIndexOf(givenType) > -1);
+		return (allValues.indexOf(givenType) > -1);
 	}
 };
 

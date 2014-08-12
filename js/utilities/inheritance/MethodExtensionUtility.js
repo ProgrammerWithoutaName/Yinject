@@ -17,15 +17,20 @@ Foo.prototype.doSomething = function (stuff) {
 var isTypeOf = function(functionType) {
 	var isType = false;
 
-	var base = this.type;
+	var meta = this.type.__meta;
 
-	isType |= base.parentMethods.reduce(function(previousValue, currentValue){
-		var initialTypeCheck = isType || (currentValue == functionType);
-		if(!initialTypeCheck && currentValue.isTypeOf) {
-			return currentValue.isTypeOf(functionType);
-		}
-		return initialTypeCheck;
-	}, isType);
+	if(meta) {
+		isType |= meta.base.parentMethods.reduce(function(previousValue, currentValue){
+			var initialTypeCheck = isType || (currentValue == functionType);
+			if(!initialTypeCheck && currentValue.isTypeOf) {
+				return currentValue.isTypeOf(functionType);
+			}
+			return initialTypeCheck;
+		}, isType);
+	} else {
+		this.type === functionType;
+	}
+
 
 	return isType;
 };
@@ -38,57 +43,27 @@ var getTypeUtilitiesFor = function(typeGiven) {
 	};
 };
 
+/***
+ * this is attached to a method in a prototype. once it is, that method can extend a parent method.
+ * once that parent method has been extended, it will be available in a call to __base.
+ * @param parentMethod
+ * @param parentMethodOwnerName
+ */
 var extendMethod = function(parentMethod, parentMethodOwnerName) {
-	this.__base[parentMethod.__ownerName || parentMethodOwnerName] = parentMethod;
-	this.__base.parentMethods.push(parentMethod);
+	var name = parentMethod.__meta.ownerName || parentMethodOwnerName;
+	this.__meta.addParent(name, parentMethod);
 };
-
-
-var getBaseMethodArguments = function(args) {
-	var argArray = Array.prototype.slice.call(args, 0);
-	// filter out context.
-	argArray.shift();
-	return argArray;
-};
-
-var build__BaseMethod = function(fn) {
-	return function (context) {
-		var passedInArgs = getBaseMethodArguments(arguments);
-
-		// call all instances
-		fn.__base.parentMethods.forEach(function (parentFn) {
-			parentFn.apply(context, passedInArgs);
-		});
-	};
-};
-
 
 // Method Extension Utility Definition
-var MethodExtensionUtility = function (functionUtilities, propertyBuilderFactory) {
-	this._functionUtilities = functionUtilities;
-	this._propertyBuilderFactory = propertyBuilderFactory;
-};
-
-MethodExtensionUtility._createBaseMethod = function (fn, propertyBuilder) {
-	fn.__base = undefined;
-
-	propertyBuilder.addPropertyWithStartingValue('__base', build__BaseMethod(fn), false);
-	fn.__base.parentMethods = [];
-	fn.extendMethod = extendMethod;
-	fn.expectedArguments = this._functionUtilities.getFunctionArguments(fn);
+var MethodExtensionUtility = function (metaFactory) {
+	this._metaFactory = metaFactory;
 };
 
 MethodExtensionUtility.prototype.initInheritableMethod = function(fn, name, owner) {
-	fn.__name = name;
-	fn.__owner = owner || fn;
-	// initially undefined, just declaring that this exists.
-	fn.__ownerName = undefined;
-
-	var propertyBuilder = this._propertyBuilderFactory.createPropertyBuilder(fn);
-
-	propertyBuilder.addGetterProperty('__ownerName', function () { return fn.__owner.__name;});
-	this._createBaseMethod(fn, propertyBuilder);
-	propertyBuilder.lockAllProperties();
+	var meta = this._metaFactory.createMeta(fn,name,owner);
+	fn.__meta = meta;
+	fn.__base = meta.base;
+	fn.extendMethod = extendMethod;
 };
 
 MethodExtensionUtility.prototype.getTypeUtilitiesFor = getTypeUtilitiesFor;

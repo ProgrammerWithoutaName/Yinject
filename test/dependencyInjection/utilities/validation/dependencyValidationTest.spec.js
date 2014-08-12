@@ -44,10 +44,10 @@ describe('dependencyValidationUtility', function () {
 		};
 
 		// Test Setup
-		var validation = dependencyValidationModule.buildDependencyValidationUtility(dependencyTypes,
-			baseDependencyValidationMock,
+		var validation = dependencyValidationModule.buildDependencyValidationUtility( baseDependencyValidationMock,
 			prototypeValidationDependencyMock,
-			customDependencyValidationMock);
+			customDependencyValidationMock,
+			dependencyTypes);
 
 		var prototypeDI = createDependencyInformationMock(dependencyTypes.prototypeDependency);
 		var moduleDI = createDependencyInformationMock(dependencyTypes.moduleDependency);

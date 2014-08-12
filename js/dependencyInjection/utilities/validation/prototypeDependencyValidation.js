@@ -5,7 +5,7 @@ var buildPrototypeDependencyValidationUtility = function (baseDependencyValidati
 	var prototypeDependencyValidationUtility = {};
 
 	var verifyPrototypeName = function (dependencyInformation) {
-		if (!dependencyInformation.prototypeName) {
+		if (!dependencyInformation.constructorName) {
 			throw "prototype name required for dependency type of 'prototype' for dependency " + dependencyInformation.dependencyName;
 		}
 	};
@@ -18,12 +18,12 @@ var buildPrototypeDependencyValidationUtility = function (baseDependencyValidati
 
 	var verifyPrototypeExistsInModule = function (dependencyInformation) {
 		var module = baseDependencyValidationUtility.verifyModuleExists(dependencyInformation);
-		if (!module[dependencyInformation.prototypeName]) {
-			throw "prototype '" + dependencyInformation.prototypeName + "' was not found on given module '" + dependencyInformation.location + "'.";
+		if (!module[dependencyInformation.constructorName]) {
+			throw "prototype '" + dependencyInformation.constructorName + "' was not found on given module '" + dependencyInformation.location + "'.";
 		}
 
-		if (typeof module[dependencyInformation.prototypeName] !== 'function') {
-			throw "given prototype '" + dependencyInformation.prototypeName + "' on given module '" + dependencyInformation.location + "' is not a function.";
+		if (typeof module[dependencyInformation.constructorName] !== 'function') {
+			throw "given prototype '" + dependencyInformation.constructorName + "' on given module '" + dependencyInformation.location + "' is not a function.";
 		}
 	};
 

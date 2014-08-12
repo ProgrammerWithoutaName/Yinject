@@ -6,7 +6,7 @@ var PropertyBuilder = function (context) {
 	this._properties = {};
 };
 
-PropertyBuilder._updatePropertyValue = function(name, attributes) {
+PropertyBuilder.prototype._updatePropertyValue = function(name, attributes) {
 	if(this._properties[name] === undefined) {
 		this._properties[name] = {
 			name: name,
@@ -17,7 +17,7 @@ PropertyBuilder._updatePropertyValue = function(name, attributes) {
 	}
 };
 
-PropertyBuilder._canUpdateProperty = function(name) {
+PropertyBuilder.prototype._canUpdateProperty = function(name) {
 	return (this._properties[name] === undefined || this._properties[name].locked === false);
 };
 
@@ -73,8 +73,7 @@ PropertyBuilder.prototype.addSetterProperty = function (name, getter) {
 PropertyBuilder.prototype.addGetterSetterProperty = function(name, getter, setter) {
 	this.setProperty( name, {
 		get: function () {
-			var result = getter.call(this);
-			return result === undefined ? this : result;
+			return getter.call(this);
 		},
 		set: function (value) {
 			setter.call(this,value);

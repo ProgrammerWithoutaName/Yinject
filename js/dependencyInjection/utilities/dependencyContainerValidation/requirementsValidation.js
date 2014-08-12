@@ -1,6 +1,6 @@
 "use strict";
 
-var buildRequirementsValidationUtility = function (arrayUtilities) {
+var buildRequirementsValidationUtility = function () {
 
 	var requirementsValidationUtility = {};
 
@@ -17,8 +17,8 @@ var buildRequirementsValidationUtility = function (arrayUtilities) {
 		var requirementsArray = [];
 
 		// populate the requirements
-		arrayUtilities.forEach(declarationArray, function (declaration) {
-			arrayUtilities.forEach(declaration.dependencies, function (dependency) {
+		declarationArray.forEach( function (declaration) {
+			declaration.dependencies.forEach(function (dependency) {
 				if (requirements[dependency] === undefined) {
 					requirements[dependency] = {
 						name: dependency,
@@ -35,7 +35,7 @@ var buildRequirementsValidationUtility = function (arrayUtilities) {
 
 	var findMissingRequirements = function (declarationContainer, requirements) {
 		var missingRequirements = [];
-		arrayUtilities.forEach(requirements, function (requirement) {
+		requirements.forEach( function (requirement) {
 			if (declarationContainer[requirement.name] === undefined) {
 				missingRequirements.push(requirement);
 			}

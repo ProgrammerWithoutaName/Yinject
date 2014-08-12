@@ -7,7 +7,6 @@ var baseUtils = utilityBuilder.utilities;
 // I use nodeUtilities for pulling in everything
 // I use array in various places, but function and prototype are used for DependencyDeclaration and building.
 var nodeUtilities = utilityBuilder.buildUtility(baseUtils.nodeUtilities);
-var arrayUtilities = utilityBuilder.buildUtility(baseUtils.arrayUtilities);
 var functionUtilities = utilityBuilder.buildUtility(baseUtils.functionUtilities);
 var prototypeUtilities = utilityBuilder.buildUtility(baseUtils.prototypeUtilities);
 
@@ -25,8 +24,8 @@ var yinjectDependencyResolutionModule = requireFrom('/dependencyInjection/utilit
 // Dependency Declaration
 var dependencyDeclarationModule = requireFrom('/dependencyInjection/utilities/dependencyDeclaration/dependencyDeclaration.js');
 var prototypeDependencyDeclarationModule = requireFrom('/dependencyInjection/utilities/dependencyDeclaration/PrototypeDependencyDeclaration.js');
-var moduleDependencyDeclarationModule = requireFrom('/dependencyInjection/utilities/dependencyDeclaration/PrototypeDependencyDeclaration.js');
-var customDependencyDeclarationModule = requireFrom('/dependencyInjection/utilities/dependencyDeclaration/PrototypeDependencyDeclaration.js');
+var moduleDependencyDeclarationModule = requireFrom('/dependencyInjection/utilities/dependencyDeclaration/ModuleDependencyDeclaration.js');
+var customDependencyDeclarationModule = requireFrom('/dependencyInjection/utilities/dependencyDeclaration/CustomDependencyDeclaration.js');
 
 // Dependency Information
 var dependencyInformationModule = requireFrom('/dependencyInjection/utilities/DependencyInformation.js');
@@ -43,8 +42,7 @@ var dependencyContainerValidationModule = requireFrom('/dependencyInjection/util
 var circularDependencyValidationModule = requireFrom('/dependencyInjection/utilities/dependencyContainerValidation/circularDependencyValidation.js');
 
 // Utilities not previously mentioned:
-var propertyFactoryModule = nodeUtilities.requireUtility('PrototypeFactory.js');
-var eventManagerFactoryModule = nodeUtilities.requireUtility('EventManagerFactory.js');
+var propertyBuilderModule = nodeUtilities.requireUtility('PropertyBuilder.js');
 
 // this is the fun part....
 // I need to construct all dependencies by hand here to return the dependency builder. I'd love to have it use itself to build itself, but yeah...
@@ -53,50 +51,54 @@ var eventManagerFactoryModule = nodeUtilities.requireUtility('EventManagerFactor
 
 
 
-var eventManagerFactory = new eventManagerFactoryModule.EventManagerFactory();
-var propertyFactory = new propertyFactoryModule.PropertyFactory(eventManagerFactory);
+var propertyBuilderFactory = new propertyBuilderModule.PropertyBuilderFactory();
 
-var dependencyInformationFactory = new dependencyInformationModule.DependencyInformationFactory(propertyFactory, scopeTypes, dependencyTypes);
+var dependencyInformationFactory = new dependencyInformationModule.DependencyInformationFactory(propertyBuilderFactory,
+	scopeTypes,
+	dependencyTypes);
 
 // dependency Validation
 var baseValidationUtility = baseDependencyValidationModule.buildBaseDependencyValidationUtility(scopeTypes,dependencyTypes);
-var customDependencyValidationUtility = customDependencyValidationModule.buildCustomDependencyValidationUtility();
+var customDependencyValidationUtility = customDependencyValidationModule.buildCustomDependencyValidationUtility(baseValidationUtility);
 var prototypeDependencyValidationUtility = prototypeDependencyValidationModule.buildPrototypeDependencyValidationUtility(baseValidationUtility);
-var dependencyValidationUtility = dependencyValidationModule.buildDependencyValidationUtility(dependencyTypes,
-	baseValidationUtility,
+
+var dependencyValidationUtility = dependencyValidationModule.buildDependencyValidationUtility( baseValidationUtility,
 	prototypeDependencyValidationUtility,
-	customDependencyValidationUtility);
+	customDependencyValidationUtility,
+	dependencyTypes);
 
 // Declaration
 var prototypeDependencyDeclarationFactory = new prototypeDependencyDeclarationModule.PrototypeDependencyDeclarationFactory(dependencyInformationFactory,
 	dependencyValidationUtility,
-	dependencyTypes,
-	scopeTypes,
 	functionUtilities,
-	prototypeUtilities);
-
-var customDependencyDeclarationFactory = new customDependencyDeclarationModule.CustomDependencyDeclarationFactory( dependencyInformationFactory,
-	dependencyValidationUtility,
-	dependencyTypes,
-	scopeTypes,
-	functionUtilities);
-
-var moduleDependencyDeclarationFactory = new moduleDependencyDeclarationModule.ModuleDependencyDeclarationFactory( dependencyInformationFactory,
-	dependencyValidationUtility,
+	prototypeUtilities,
+	propertyBuilderFactory,
 	dependencyTypes,
 	scopeTypes);
+
+var customDependencyDeclarationFactory = new customDependencyDeclarationModule.CustomDependencyDeclarationFactory (dependencyInformationFactory,
+	dependencyValidationUtility,
+	functionUtilities,
+	propertyBuilderFactory,
+	dependencyTypes,
+	scopeTypes);
+
+var moduleDependencyDeclarationFactory = new moduleDependencyDeclarationModule.ModuleDependencyDeclarationFactory (dependencyInformationFactory,
+	dependencyValidationUtility,
+	propertyBuilderFactory,
+	dependencyTypes,
+	scopeTypes) ;
 
 var dependencyDeclarationUtility = dependencyDeclarationModule.buildDependencyDeclaration(prototypeDependencyDeclarationFactory,
 	customDependencyDeclarationFactory,
 	moduleDependencyDeclarationFactory);
 
 // container Validation
-var requirementsValidation = requirementsValidationModule.buildRequirementsValidationUtility(arrayUtilities);
+var requirementsValidation = requirementsValidationModule.buildRequirementsValidationUtility();
 
-var circularDependencyValidation = circularDependencyValidationModule.buildCircularDependencyValidationUtility(arrayUtilities);
+var circularDependencyValidation = circularDependencyValidationModule.buildCircularDependencyValidationUtility();
 
-var dependencyContainerValidation = dependencyContainerValidationModule.buildContainerValidationUtility(arrayUtilities,
-	circularDependencyValidation,
+var dependencyContainerValidation = dependencyContainerValidationModule.buildContainerValidationUtility( circularDependencyValidation,
 	requirementsValidation);
 
 // Yinject

@@ -1,7 +1,6 @@
 var chai = require('chai');
-var functionReflectionUtilityBuilder = require(__dirname + '/../../js/utilities/functionReflection.js');
 
-var functionReflectionUtility = functionReflectionUtilityBuilder.buildFunctionReflectionUtility();
+var functionReflectionUtility = require(__dirname + '/../../js/utilities/functionReflection.js');
 var getFunctionArguments = functionReflectionUtility.getFunctionArguments;
 
 var expect = chai.expect;

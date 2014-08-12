@@ -7,10 +7,6 @@ var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m;
 var FN_ARG_SPLIT = /,/;
 
 
-var buildFunctionReflectionUtility = function() {
-
-	var functionReflectionUtility = {};
-
 	var removeCommentsFromFunctionText = function (functionText) {
 		return functionText.replace(STRIP_COMMENTS, '');
 	};
@@ -37,7 +33,7 @@ var buildFunctionReflectionUtility = function() {
 
 	// we have to use RegEx for this.
 	//Used Angulars libraries to make this. Thank you Google/Angular team.
-	functionReflectionUtility.getFunctionArguments = function (fn) {
+	var getFunctionArguments = function (fn) {
 		// confirm fn is a function.
 		if (typeof fn !== 'function') {
 			return [];
@@ -45,8 +41,7 @@ var buildFunctionReflectionUtility = function() {
 		return pullArgumentsFromFunctionText(fn.toString());
 	};
 
-	return functionReflectionUtility;
-};
 
 
-module.exports.buildFunctionReflectionUtility = buildFunctionReflectionUtility;
+
+module.exports.getFunctionArguments = getFunctionArguments;

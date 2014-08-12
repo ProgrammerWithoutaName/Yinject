@@ -21,7 +21,7 @@ describe('prototypeDependencyValidationUtility', function () {
 
 		it('should throw an error if prototype does not exist in the module and there is no constructor', function () {
 			var dependencyInformationMock = {
-				prototypeName: 'none',
+				constructorName: 'none',
 				location: 'somewhere',
 				dependencyName: 'fake',
 				constructorFunction: null
@@ -33,7 +33,7 @@ describe('prototypeDependencyValidationUtility', function () {
 
 		it('should throw an error if no prototype name exists and no constructor exists', function () {
 			var dependencyInformationMock = {
-				prototypeName: null,
+				constructorName: null,
 				location: 'somewhere',
 				dependencyName: 'fake',
 				constructorFunction: null
@@ -45,19 +45,19 @@ describe('prototypeDependencyValidationUtility', function () {
 
 		it('should throw an error if constructor exists but is not a function', function () {
 			var dependencyInformationMock = {
-				prototypeName: undefined,
+				constructorName: undefined,
 				location: 'somewhere',
 				dependencyName: 'fake',
-				constructorFunction: 'foo',
+				constructorFunction: 'foo'
 			};
 
 			var testRun = function () { prototypeDependencyValidation.verifyPrototypeDependencyInformation(dependencyInformationMock) };
 			expect(testRun).to.throw("prototype fake's constructor is not a function.");
 		});
 
-		it('should not throw an error if prototypeName exists on the given module', function () {
+		it('should not throw an error if constructorName exists on the given module', function () {
 			var dependencyInformationMock = {
-				prototypeName: 'TestPrototype',
+				constructorName: 'TestPrototype',
 				location: 'TestPrototype',
 				dependencyName: 'fake',
 				constructorFunction: function () {return null;}
@@ -69,7 +69,7 @@ describe('prototypeDependencyValidationUtility', function () {
 
 		it('should not throw an error if constructor exists and is a function', function () {
 			var dependencyInformationMock = {
-				prototypeName: undefined,
+				constructorName: undefined,
 				location: null,
 				dependencyName:  null,
 				constructorFunction: function () {}

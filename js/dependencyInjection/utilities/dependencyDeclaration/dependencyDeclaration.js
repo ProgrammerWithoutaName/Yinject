@@ -7,15 +7,15 @@ var buildDependencyDeclarationUtility = function (prototypeDependencyDeclaration
 	var dependencyDeclaration = {};
 
 	dependencyDeclaration.createPrototypeDependency = function (dependencyName, prototypeName) {
-		return new prototypeDependencyDeclarationFactory.createPrototypeDependencyDeclaration(dependencyName, prototypeName);
+		return prototypeDependencyDeclarationFactory.createPrototypeDependencyDeclaration(dependencyName, prototypeName);
 	};
 
 	dependencyDeclaration.createCustomConstructorDependency = function (dependencyName, customConstructor) {
-		return new customDependencyDeclarationFactory.createCustomDependencyDeclaration(dependencyName, customConstructor);
+		return customDependencyDeclarationFactory.createCustomDependencyDeclaration(dependencyName, customConstructor);
 	};
 
 	dependencyDeclaration.createModuleDependency = function (dependencyName, moduleName) {
-		return new moduleDependencyDeclarationFactory.createModuleDependencyDeclaration(dependencyName, moduleName);
+		return moduleDependencyDeclarationFactory.createModuleDependencyDeclaration(dependencyName, moduleName);
 	};
 
 	return dependencyDeclaration;

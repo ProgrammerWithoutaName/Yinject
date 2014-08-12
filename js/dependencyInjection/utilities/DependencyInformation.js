@@ -10,16 +10,11 @@ var DependencyInformation = function (propertyBuilderFactory, dependencyTypes, s
 	this._dependencyTypes = dependencyTypes;
 	this._propertyBuilder = propertyBuilderFactory.createPropertyBuilder(this);
 
-	// defaults with getter/setter.
-	this._addProperty('dependencyName');
-	this._addProperty('dependencies');
-	this._addProperty('prototypeName');
-	this._addProperty('location');
 
 	var self = this;
 
 	// types that can be validated on set.
-	this._addPropertyWithValidation('scopeTypes', function(value) {
+	this._addPropertyWithValidation('scopeType', function(value) {
 		if(!scopeTypes.typeIsValid(value)) {
 			throw generateErrorMessage('scopeType', value, self.dependencyName)
 		}
@@ -32,7 +27,7 @@ var DependencyInformation = function (propertyBuilderFactory, dependencyTypes, s
 	});
 
 	this._addPropertyWithValidation('dependencyType', function(value) {
-		if(!scopeTypes.typeIsValid(value)) {
+		if(!dependencyTypes.typeIsValid(value)) {
 			throw generateErrorMessage('dependencyType', value, self.dependencyName);
 		}
 	});
@@ -44,18 +39,19 @@ var DependencyInformation = function (propertyBuilderFactory, dependencyTypes, s
 };
 
 DependencyInformation.prototype._addPropertyWithValidation = function(name, validationFunction) {
-	var backingValue = null;
+	if(!this._backingValues) {
+		this._backingValues = {};
+	}
+	var self = this;
 
-	this._propertyBuilder.addGetterProperty(name, function () {return backingValue;});
-	this._propertyBuilder.addSetterProperty(name,  function (value) {
-		validationFunction(value);
-		backingValue = value;
-	});
+	this._propertyBuilder.addGetterSetterProperty (name,
+		function () {return self._backingValues[name];},
+		function (value) {
+			validationFunction(value);
+			self._backingValues[name] = value;
+		}
+	);
 
-};
-
-DependencyInformation.prototype._addProperty = function(name) {
-	this[name] = this._propertyBuilder.addProperty(name,true);
 };
 
 var DependencyInformationFactory = function (propertyBuilderFactory,

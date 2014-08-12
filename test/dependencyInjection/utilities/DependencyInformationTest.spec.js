@@ -18,6 +18,7 @@ describe('DependencyInformationFactory', function () {
 			addProperty: function () {},
 			addGetterProperty: function () {},
 			addSetterProperty: function () {},
+			addGetterSetterProperty: function () {},
 			lockAllProperties: function () {}
 		}
 	}};

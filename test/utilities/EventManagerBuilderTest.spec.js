@@ -1,5 +1,5 @@
 "use strict";
-var module = require(__dirname + '/../../js/utilities/EventManagerFactory.js');
+var module = require(__dirname + '/../../js/utilities/EventManager.js');
 
 var EventManagerFactory = module.EventManagerFactory;
 var EventManager = module.EventManager;

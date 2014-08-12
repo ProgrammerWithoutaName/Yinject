@@ -18,15 +18,15 @@ var ModuleDependencyDeclaration = function (dependencyName,
 	moduleName,
 	dependencyInformation,
 	dependencyValidationUtility,
+	propertyBuilderFactory,
 	dependencyTypes,
-	scopeTypes,
-	propertyBuilderFactory) {
+	scopeTypes) {
 
 	ModuleDependencyDeclaration.__base['BaseDependencyDeclaration'] (this,
 		dependencyName,
-		propertyBuilderFactory,
-		dependencyValidationUtility,
 		dependencyInformation,
+		dependencyValidationUtility,
+		propertyBuilderFactory,
 		scopeTypes);
 
 	this._dependencyInformation.location = moduleName;
@@ -41,17 +41,18 @@ var ModuleDependencyDeclaration = function (dependencyName,
 ModuleDependencyDeclaration.prototype.populate = function () {
 	var self = this;
 	this._dependencyInformation.build = function () {
-		return require(self._dependencyInformation.location());
+		return require(self._dependencyInformation.location);
 	};
 };
 
 var ModuleDependencyDeclarationFactory = function (dependencyInformationFactory,
 												   	dependencyValidationUtility,
-													_propertyBuilderFactory,
+													propertyBuilderFactory,
 													dependencyTypes,
 													scopeTypes) {
 	this._dependencyInformationFactory = dependencyInformationFactory;
 	this._dependencyValidationUtility = dependencyValidationUtility;
+	this._propertyBuilderFactory = propertyBuilderFactory;
 	this._dependencyTypes = dependencyTypes;
 	this._scopeTypes = scopeTypes;
 };
@@ -61,13 +62,15 @@ ModuleDependencyDeclarationFactory.prototype.createModuleDependencyDeclaration =
 		moduleName,
 		this._dependencyInformationFactory.createDependencyInformation(),
 		this._dependencyValidationUtility,
-		this.dependencyTypes,
-		this.scopeTypes);
+		this._propertyBuilderFactory,
+		this._dependencyTypes,
+		this._scopeTypes);
+
 };
 
 //define the inheritance for Module Dependency Declaration.
-imports.inheritenceUtilities.prototypeOf('ModuleDependencyDeclaration',ModuleDependencyDeclaration).
-	extends(imports.baseDependencyDeclarationContainer);
+imports.inheritanceUtilities.prototypeOf('ModuleDependencyDeclaration',ModuleDependencyDeclaration).
+	extend(imports.baseDependencyDeclarationContainer);
 
 
 

@@ -46,45 +46,37 @@ describe('YinjectDependencyResolution', function () {
 
 		var orderCalled = 1;
 		var verifyCalled = 0;
-		var getDependencyInformationCalled = 0;
 		var populateCalled = 0;
 
+		var testDependencyMockName = 'dependencyInformation';
 		var testDependency = {
 			dependencyName: 'test',
-			mockName: 'dependencyInformation',
+			mockName: testDependencyMockName,
 			verify: function () {verifyCalled = orderCalled; orderCalled++;},
 			populate: function () {populateCalled = orderCalled; orderCalled++;},
-			getDependencyInformation: function () {
-				getDependencyInformationCalled = orderCalled;
-				orderCalled++;
-				return {
-					dependencyName: function () { return 'test'; },
-					isMockOf: testDependency.mockName
-				};
-			}
+			dependencyInformation: {
+					dependencyName: 'test',
+					isMockOf: testDependencyMockName
+				}
 		};
 
 		var testCall = function () { dependencyResolution.add(testDependency); };
 
 		it('should not error out when called with valid information', function () {
-			expect(testCall).to.not.throw(Error);
+			expect(testCall).to.not.throw();
 		});
 
 		it('should call verify on the object given before calling anything else', function () {
 			expect(verifyCalled).to.equal(1);
 		});
 
-		it('should call populate on the object given before getting dependencyInformation', function () {
-			expect(populateCalled).to.be.lessThan(getDependencyInformationCalled);
-		});
-
-		it('should call getDependencyInformation on the object given to get the dependencyInformation', function () {
-			expect(getDependencyInformationCalled).to.be.greaterThan(0);
+		it('should call populate on the object', function () {
+			expect(populateCalled).to.be.greaterThan(0);
 		});
 
 		it('should add dependencyInformation to container using the dependencyName field in dependencyInformation', function () {
 			expect(dependencyResolution.container[testDependency.dependencyName]).to.not.be.undefined;
-			expect(dependencyResolution.container[testDependency.dependencyName].dependencyName()).to.equal(testDependency.dependencyName);
+			expect(dependencyResolution.container[testDependency.dependencyName].dependencyName).to.equal(testDependency.dependencyName);
 			expect(dependencyResolution.container[testDependency.dependencyName].isMockOf).to.equal(testDependency.mockName);
 		});
 	});
@@ -97,9 +89,9 @@ describe('YinjectDependencyResolution', function () {
 
 		// fake dependency maker:
 		var MockDependency = function (dependencyName, scopeType, dependencies, buildFunction) {
-			this.dependencyName = function() {return dependencyName;} ;
-			this.scopeType = function () {return scopeType;} ;
-			this.dependencies = function () { return dependencies;} ;
+			this.dependencyName = dependencyName;
+			this.scopeType = scopeType;
+			this.dependencies = dependencies;
 			this.build = buildFunction;
 		};
 
@@ -139,28 +131,28 @@ describe('YinjectDependencyResolution', function () {
 
 		//setup:
 		var resolver = new yinjectDependencyResolutionModule.YinjectDependencyResolution(scopeTypes);
-		resolver.container[defaultDependencyNone.dependencyName()] = defaultDependencyNone;
-		resolver.container[requestDependencyNone.dependencyName()] = requestDependencyNone;
-		resolver.container[singletonDependencyNone.dependencyName()] = singletonDependencyNone;
+		resolver.container[defaultDependencyNone.dependencyName] = defaultDependencyNone;
+		resolver.container[requestDependencyNone.dependencyName] = requestDependencyNone;
+		resolver.container[singletonDependencyNone.dependencyName] = singletonDependencyNone;
 
-		resolver.container[defaultDependencySub1.dependencyName()] = defaultDependencySub1;
-		resolver.container[requestDependencySub1.dependencyName()] = requestDependencySub1;
-		resolver.container[singletonDependencySub1.dependencyName()] = singletonDependencySub1;
+		resolver.container[defaultDependencySub1.dependencyName] = defaultDependencySub1;
+		resolver.container[requestDependencySub1.dependencyName] = requestDependencySub1;
+		resolver.container[singletonDependencySub1.dependencyName] = singletonDependencySub1;
 
-		resolver.container[defaultDependencySub2.dependencyName()] = defaultDependencySub2;
-		resolver.container[requestDependencySub2.dependencyName()] = requestDependencySub2;
-		resolver.container[singletonDependencySub2.dependencyName()] = singletonDependencySub2;
+		resolver.container[defaultDependencySub2.dependencyName] = defaultDependencySub2;
+		resolver.container[requestDependencySub2.dependencyName] = requestDependencySub2;
+		resolver.container[singletonDependencySub2.dependencyName] = singletonDependencySub2;
 
-		resolver.container[defaultDependencySub3.dependencyName()] = defaultDependencySub3;
-		resolver.container[requestDependencySub3.dependencyName()] = requestDependencySub3;
-		resolver.container[singletonDependencySub3.dependencyName()] = singletonDependencySub3;
+		resolver.container[defaultDependencySub3.dependencyName] = defaultDependencySub3;
+		resolver.container[requestDependencySub3.dependencyName] = requestDependencySub3;
+		resolver.container[singletonDependencySub3.dependencyName] = singletonDependencySub3;
 
 		var testDependency = function (dependencyMock) {
 			var returned;
-			resolver.resolve(dependencyMock.dependencyName());
-			var testMethod = function () {returned = resolver.resolve(dependencyMock.dependencyName());};
+			resolver.resolve(dependencyMock.dependencyName);
+			var testMethod = function () {returned = resolver.resolve(dependencyMock.dependencyName);};
 			expect(testMethod).to.not.throw(Error);
-			expect(returned.name).to.equal(dependencyMock.dependencyName());
+			expect(returned.name).to.equal(dependencyMock.dependencyName);
 			return returned;
 		};
 
@@ -182,19 +174,19 @@ describe('YinjectDependencyResolution', function () {
 		});
 
 		var pushDependenciesForTesting = function(givenDependencies) {
-			returnedSingletonsNone.push(givenDependencies[singletonDependencyNone.dependencyName()]);
+			returnedSingletonsNone.push(givenDependencies[singletonDependencyNone.dependencyName]);
 		};
 
 		var confirmMocksDependencyIsCorrect = function(mock,implementationGiven) {
-			expect(mock.dependencyName()).to.equal(implementationGiven.name);
+			expect(mock.dependencyName).to.equal(implementationGiven.name);
 		};
 
 		var confirmDependenciesForLevel1AreCorrect = function (givenDependencies) {
 			expect(givenDependencies).is.not.undefined;
 			expect(givenDependencies).is.not.empty;
-			confirmMocksDependencyIsCorrect(defaultDependencyNone, givenDependencies[defaultDependencyNone.dependencyName()]);
-			confirmMocksDependencyIsCorrect(requestDependencyNone, givenDependencies[requestDependencyNone.dependencyName()]);
-			confirmMocksDependencyIsCorrect(singletonDependencyNone, givenDependencies[singletonDependencyNone.dependencyName()]);
+			confirmMocksDependencyIsCorrect(defaultDependencyNone, givenDependencies[defaultDependencyNone.dependencyName]);
+			confirmMocksDependencyIsCorrect(requestDependencyNone, givenDependencies[requestDependencyNone.dependencyName]);
+			confirmMocksDependencyIsCorrect(singletonDependencyNone, givenDependencies[singletonDependencyNone.dependencyName]);
 
 			pushDependenciesForTesting(givenDependencies);
 		};
@@ -218,14 +210,14 @@ describe('YinjectDependencyResolution', function () {
 			expect(givenDependencies).is.not.undefined;
 			expect(givenDependencies).is.not.empty;
 			// confirm level 2
-			confirmMocksDependencyIsCorrect(defaultDependencySub1, givenDependencies[defaultDependencySub1.dependencyName()]);
-			confirmMocksDependencyIsCorrect(requestDependencySub1, givenDependencies[requestDependencySub1.dependencyName()]);
-			confirmMocksDependencyIsCorrect(singletonDependencySub1, givenDependencies[singletonDependencySub1.dependencyName()]);
+			confirmMocksDependencyIsCorrect(defaultDependencySub1, givenDependencies[defaultDependencySub1.dependencyName]);
+			confirmMocksDependencyIsCorrect(requestDependencySub1, givenDependencies[requestDependencySub1.dependencyName]);
+			confirmMocksDependencyIsCorrect(singletonDependencySub1, givenDependencies[singletonDependencySub1.dependencyName]);
 
 			// confirm level 1
-			confirmDependenciesForLevel1AreCorrect(givenDependencies[defaultDependencySub1.dependencyName()].givenDependencies);
-			confirmDependenciesForLevel1AreCorrect(givenDependencies[requestDependencySub1.dependencyName()].givenDependencies);
-			confirmDependenciesForLevel1AreCorrect(givenDependencies[requestDependencySub1.dependencyName()].givenDependencies);
+			confirmDependenciesForLevel1AreCorrect(givenDependencies[defaultDependencySub1.dependencyName].givenDependencies);
+			confirmDependenciesForLevel1AreCorrect(givenDependencies[requestDependencySub1.dependencyName].givenDependencies);
+			confirmDependenciesForLevel1AreCorrect(givenDependencies[requestDependencySub1.dependencyName].givenDependencies);
 		};
 
 		// basic resolution with sub dependencies
@@ -250,14 +242,14 @@ describe('YinjectDependencyResolution', function () {
 			expect(givenDependencies).is.not.undefined;
 			expect(givenDependencies).is.not.empty;
 			// confirm level 2
-			confirmMocksDependencyIsCorrect(defaultDependencySub2, givenDependencies[defaultDependencySub2.dependencyName()]);
-			confirmMocksDependencyIsCorrect(requestDependencySub2, givenDependencies[requestDependencySub2.dependencyName()]);
-			confirmMocksDependencyIsCorrect(singletonDependencySub2, givenDependencies[singletonDependencySub2.dependencyName()]);
+			confirmMocksDependencyIsCorrect(defaultDependencySub2, givenDependencies[defaultDependencySub2.dependencyName]);
+			confirmMocksDependencyIsCorrect(requestDependencySub2, givenDependencies[requestDependencySub2.dependencyName]);
+			confirmMocksDependencyIsCorrect(singletonDependencySub2, givenDependencies[singletonDependencySub2.dependencyName]);
 
 			// confirm level 1
-			confirmDependenciesForLevel2AreCorrect(givenDependencies[defaultDependencySub2.dependencyName()].givenDependencies);
-			confirmDependenciesForLevel2AreCorrect(givenDependencies[requestDependencySub2.dependencyName()].givenDependencies);
-			confirmDependenciesForLevel2AreCorrect(givenDependencies[requestDependencySub2.dependencyName()].givenDependencies);
+			confirmDependenciesForLevel2AreCorrect(givenDependencies[defaultDependencySub2.dependencyName].givenDependencies);
+			confirmDependenciesForLevel2AreCorrect(givenDependencies[requestDependencySub2.dependencyName].givenDependencies);
+			confirmDependenciesForLevel2AreCorrect(givenDependencies[requestDependencySub2.dependencyName].givenDependencies);
 		};
 
 		it('should resolve a default dependency with 2 levels of dependencies', function () {
@@ -276,33 +268,33 @@ describe('YinjectDependencyResolution', function () {
 
 		// Scope Type behavior verification on top level
 		it('should resolve default dependencies with a new dependency each call', function () {
-			var firstCall = resolver.resolve(defaultDependencyNone.dependencyName());
-			var secondCall = resolver.resolve(defaultDependencyNone.dependencyName());
+			var firstCall = resolver.resolve(defaultDependencyNone.dependencyName);
+			var secondCall = resolver.resolve(defaultDependencyNone.dependencyName);
 			expect(firstCall).to.not.equal(secondCall);
 		});
 		it('should resolve a request dependency with a new dependency each call', function () {
-			var firstCall = resolver.resolve(requestDependencyNone.dependencyName());
-			var secondCall = resolver.resolve(requestDependencyNone.dependencyName());
+			var firstCall = resolver.resolve(requestDependencyNone.dependencyName);
+			var secondCall = resolver.resolve(requestDependencyNone.dependencyName);
 			expect(firstCall).to.not.equal(secondCall);
 		});
 
 		it('should resolve a singleton dependency with the same dependency each call', function () {
-			var firstCall = resolver.resolve(singletonDependencyNone.dependencyName());
-			var secondCall = resolver.resolve(singletonDependencyNone.dependencyName());
+			var firstCall = resolver.resolve(singletonDependencyNone.dependencyName);
+			var secondCall = resolver.resolve(singletonDependencyNone.dependencyName);
 			expect(firstCall).to.equal(secondCall);
 		});
 
 		var getResolvedSubDependenciesLevel2 = function ( dependencyName, givenDependencies) {
 			var resolvedArray = [];
-			resolvedArray.push(givenDependencies[defaultDependencySub1.dependencyName()].givenDependencies[dependencyName]);
-			resolvedArray.push(givenDependencies[requestDependencySub1.dependencyName()].givenDependencies[dependencyName]);
+			resolvedArray.push(givenDependencies[defaultDependencySub1.dependencyName].givenDependencies[dependencyName]);
+			resolvedArray.push(givenDependencies[requestDependencySub1.dependencyName].givenDependencies[dependencyName]);
 			return resolvedArray;
 		};
 
 		// scope type behavior verification on sub-level
 		it('should resolve a default dependency with a new instance each time it is requested inside of a single resolve', function () {
-			var resolved = resolver.resolve(defaultDependencySub2.dependencyName());
-			var resolvedDefaults = getResolvedSubDependenciesLevel2(defaultDependencyNone.dependencyName(), resolved.givenDependencies);
+			var resolved = resolver.resolve(defaultDependencySub2.dependencyName);
+			var resolvedDefaults = getResolvedSubDependenciesLevel2(defaultDependencyNone.dependencyName, resolved.givenDependencies);
 
 			var length = resolvedDefaults.length;
 			while(resolvedDefaults.length > 0) {
@@ -314,8 +306,8 @@ describe('YinjectDependencyResolution', function () {
 
 		});
 		it('should resolve a request dependency with the same instance each time it is requested inside of a single resolve', function () {
-			var resolved = resolver.resolve(defaultDependencySub2.dependencyName());
-			var resolvedDefaults = getResolvedSubDependenciesLevel2(requestDependencyNone.dependencyName(), resolved.givenDependencies);
+			var resolved = resolver.resolve(defaultDependencySub2.dependencyName);
+			var resolvedDefaults = getResolvedSubDependenciesLevel2(requestDependencyNone.dependencyName, resolved.givenDependencies);
 			expect(resolvedDefaults[0]).to.equal(resolvedDefaults[1]);
 		});
 

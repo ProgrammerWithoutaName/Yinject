@@ -1,6 +1,6 @@
 "use strict";
 
-var buildCircularDependencyValidationUtility = function(arrayUtilities) {
+var buildCircularDependencyValidationUtility = function() {
 	// Circular dependency Check
 	var circularDependencyValidationUtility = {};
 
@@ -20,11 +20,11 @@ var buildCircularDependencyValidationUtility = function(arrayUtilities) {
 
 	var detectCircularDependency = function (dependenciesInChain, dependencyToVerify) {
 		// detect error
-		arrayUtilities.forEach(dependenciesInChain, function (chainDependency) {
+		dependenciesInChain.forEach( function (chainDependency) {
 			if (chainDependency === dependencyToVerify.dependencyName) {
 				throw getCircularDependencyError(dependencyToVerify.dependencyName, dependencyToVerify.dependencyName, dependenciesInChain);
 			}
-			arrayUtilities.forEach(dependencyToVerify.dependencies, function (requiredDependency) {
+			dependencyToVerify.dependencies.forEach( function (requiredDependency) {
 				if (chainDependency === requiredDependency) {
 					throw getCircularDependencyError(dependencyToVerify.dependencyName, requiredDependency, dependenciesInChain);
 				}
@@ -35,7 +35,7 @@ var buildCircularDependencyValidationUtility = function(arrayUtilities) {
 	var checkChildren = function (dependencyContainer, parentDependency, dependenciesInChain) {
 		dependenciesInChain.push(parentDependency.dependencyName);
 		// chain down to detect errors.
-		arrayUtilities.forEach(parentDependency.dependencies, function (dependency) {
+		parentDependency.dependencies.forEach( function (dependency) {
 			var chainClone = dependenciesInChain.slice(0);
 			circularDependencyValidationUtility.checkForCircularDependencies(dependencyContainer, dependencyContainer[dependency], chainClone);
 		});
@@ -49,6 +49,8 @@ var buildCircularDependencyValidationUtility = function(arrayUtilities) {
 		detectCircularDependency(dependenciesInChain, dependencyToVerify);
 		checkChildren(dependencyContainer, dependencyToVerify, dependenciesInChain);
 	};
+
+	return circularDependencyValidationUtility;
 };
 
 

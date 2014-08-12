@@ -54,7 +54,7 @@ InheritanceUtilities.prototype._initInheritanceObjectType = function () {
  * @param type - constructor/type definition of Type
  * @returns {*}
  */
-this.prototype.prototypeOf = function (typeName, type) {
+InheritanceUtilities.prototype.prototypeOf = function (typeName, type) {
 	this._methodExtensionUtility.initInheritableMethod(typeName,type);
 	var inheritanceDefinition = this._inheritanceBuilderFactory.createInheritanceBuilder({
 		name: typeName,

@@ -1,13 +1,13 @@
 "use strict";
 
-var buildDependencyValidationUtility = function (dependencyTypes,
-												 baseDependencyValidationUtility,
+var buildDependencyValidationUtility = function ( baseDependencyValidationUtility,
 												 prototypeValidationUtility,
-												 customDependencyValidationUtility) {
+												 customDependencyValidationUtility,
+												 dependencyTypes) {
 
 
-	var dependencyInformationValidationUtility = {};
-	dependencyInformationValidationUtility.verifyDependencyInformation = function (dependencyInformation) {
+	var dependencyValidationUtility = {};
+	dependencyValidationUtility.verifyDependencyInformation = function (dependencyInformation) {
 
 		baseDependencyValidationUtility.verifyBaseDependencyInformation(dependencyInformation);
 
@@ -24,7 +24,7 @@ var buildDependencyValidationUtility = function (dependencyTypes,
 		}
 	};
 
-	return dependencyInformationValidationUtility;
+	return dependencyValidationUtility;
 };
 
 

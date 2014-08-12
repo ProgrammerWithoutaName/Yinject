@@ -13,10 +13,7 @@ var buildPrototypeUtilities = function () {
 };
 
 var buildFunctionReflection = function () {
-	// array Utilities
-	var functionReflectionModule = nodeUtilities.requireUtility('functionReflection.js');
-
-	return functionReflectionModule.buildFunctionReflectionUtility();
+	return nodeUtilities.requireUtility('functionReflection.js');;
 };
 
 var buildFunctionUtilities = function () {
@@ -26,19 +23,24 @@ var buildFunctionUtilities = function () {
 };
 
 var buildPropertyBuilderFactory = function () {
-	var propertyBuilderModule = nodeUtilities.requireUtility('propertyBuilder.js');
+	var propertyBuilderModule = nodeUtilities.requireUtility('PropertyBuilder.js');
 	return new propertyBuilderModule.PropertyBuilderFactory();
 };
 
-var buildMethodExtensionUtility = function (functionUtilities, propertyBuilderFactory) {
+var buildMetaFactory = function(functionUtilities, propertyBuilderFactory) {
 	functionUtilities = functionUtilities || buildFunctionUtilities();
 	propertyBuilderFactory = propertyBuilderFactory || buildPropertyBuilderFactory();
 
-	var methodExtensionUtilityModule = nodeUtilities.requireUtility('/inheritance/MethodExtensionUtility.js');
-	return  new methodExtensionUtilityModule.MethodExtensionUtility(functionUtilities,propertyBuilderFactory);
+	var metaModule = nodeUtilities.requireUtility('/inheritance/Meta.js');
+	return new metaModule.MetaFactory(propertyBuilderFactory, functionUtilities);
 };
 
+var buildMethodExtensionUtility = function (functionUtilities, propertyBuilderFactory) {
+	var metaFactory = buildMetaFactory(functionUtilities, propertyBuilderFactory);
 
+	var methodExtensionUtilityModule = nodeUtilities.requireUtility('/inheritance/MethodExtensionUtility.js');
+	return  new methodExtensionUtilityModule.MethodExtensionUtility(metaFactory);
+};
 
 var buildInheritanceBuilderFactory = function (methodExtensionUtility) {
 	methodExtensionUtility = methodExtensionUtility || buildMethodExtensionUtility();
@@ -74,5 +76,5 @@ module.exports.utilities = {
 	functionUtilities:'functionUtilities',
 	prototypeUtilities:'prototypeUtilities',
 	nodeUtilities:'nodeUtilities',
-	inheritanceUtilities:' inheritanceUtilities'
+	inheritanceUtilities:'inheritanceUtilities'
 };

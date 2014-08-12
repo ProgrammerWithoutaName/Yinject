@@ -3,13 +3,14 @@
 // for dependency 'foo' use prototype 'bar' from 'place.js' resolved with 'request scope'
 
 var BaseDependencyDeclaration = function (dependencyName,
-											propertyBuilderFactory,
-											dependencyValidationUtility,
-											dependencyInformation,
-											scopeTypes) {
+										  dependencyInformation,
+										  dependencyValidationUtility,
+										  propertyBuilderFactory,
+										  scopeTypes) {
 	// required type
 	this._dependencyValidationUtility = dependencyValidationUtility;
 	this._propertyBuilder = propertyBuilderFactory.createPropertyBuilder(this);
+	this._propertyBuilderFactory = propertyBuilderFactory;
 	this._scopeTypes = scopeTypes;
 
 	this._initDependencyInformation(dependencyInformation,dependencyName);
@@ -36,27 +37,27 @@ BaseDependencyDeclaration.prototype._initDependencyInformation = function (depen
  * @private
  */
 BaseDependencyDeclaration.prototype._buildInKeywords = function () {
-	var keywordWith = {};
+	var keywordIn = {};
 	var self = this;
-	this._propertyBuilder.addPropertyWithStartingValue('with', keywordWith, false);
+	this._propertyBuilder.addPropertyWithStartingValue('in', keywordIn, false);
 
-	var scopePropertyBuilder = this._propertyBuilderFactory.createPropertyBuilder(keywordWith);
+	var scopePropertyBuilder = this._propertyBuilderFactory.createPropertyBuilder(keywordIn);
 
 	// with.defaultScope
 	scopePropertyBuilder.addGetterProperty('defaultScope', function () {
-			self._dependencyInformation.scope = this.scopeTypes.defaultScope;
+			self._dependencyInformation.scope = self._scopeTypes.defaultScope;
 			return self;
 	});
 
 	// with.requestScope
 	scopePropertyBuilder.addGetterProperty('requestScope', function () {
-		self._dependencyInformation.scope = this.scopeTypes.requestScope;
+		self._dependencyInformation.scope = self._scopeTypes.requestScope;
 		return self;
 	});
 
 	// with.singletonScope
 	scopePropertyBuilder.addGetterProperty('singletonScope', function () {
-		self._dependencyInformation.scope = this.scopeTypes.singletonScope;
+		self._dependencyInformation.scope = self._scopeTypes.singletonScope;
 		return self;
 	});
 };

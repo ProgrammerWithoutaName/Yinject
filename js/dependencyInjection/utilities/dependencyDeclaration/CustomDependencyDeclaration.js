@@ -13,13 +13,18 @@ var CustomDependencyDeclaration = function (dependencyName,
 											scopeTypes) {
 	CustomDependencyDeclaration.__base['BaseDependencyDeclaration'] (this,
 		dependencyName,
-		propertyBuilderFactory,
-		dependencyValidationUtility,
 		dependencyInformation,
+		dependencyValidationUtility,
+		propertyBuilderFactory,
 		scopeTypes);
 
 
-	this._dependencyInformation.constructorFunction = constructor;
+	if(typeof constructor === 'function') {
+		this._dependencyInformation.constructorFunction = constructor;
+	} else {
+		this._dependencyInformation.constructorName = constructor;
+	}
+
 	this._dependencyInformation.dependencyType = dependencyTypes.customDependency;
 
 	this._functionUtilities = functionUtilities;
@@ -32,18 +37,26 @@ var CustomDependencyDeclaration = function (dependencyName,
 };
 
 CustomDependencyDeclaration.prototype.populate = function () {
-	this._dependencyInformation.dependencies(this._functionUtilities.getFunctionArguments(this._dependencyInformation.constructor()));
+	if(!this._dependencyInformation.constructorFunction) {
+		this._getConstructorFunction();
+	}
+	this._dependencyInformation.dependencies = this._functionUtilities.getFunctionArguments(this._dependencyInformation.constructor);
 
 	this._createBuildFromCustomFunction();
 };
 
+CustomDependencyDeclaration.prototype._getConstructorFunction = function () {
+	var module = require(this._dependencyInformation.location);
+	this._dependencyInformation.constructorFunction = module[this._dependencyInformation.constructorName];
+};
+
 CustomDependencyDeclaration.prototype._createBuildFromCustomFunction = function () {
 	var self = this;
-	self._dependencyInformation.dependencies(this._functionUtilities.getFunctionArguments(self._dependencyInformation.constructor()));
+	self._dependencyInformation.dependencies = this._functionUtilities.getFunctionArguments(self._dependencyInformation.constructorFunction);
 
 	this._dependencyInformation.build = function (dependencies) {
-		var constructedArguments = self._functionUtilities.buildArguments(self._dependencyInformation.dependencies(), dependencies);
-		return self._functionUtilities.safeFunctionApply(self._dependencyInformation.constructor(), constructedArguments);
+		var constructedArguments = self._functionUtilities.buildArguments(self._dependencyInformation.dependencies, dependencies);
+		return self._functionUtilities.safeFunctionApply(self._dependencyInformation.constructorFunction, constructedArguments);
 	};
 };
 
@@ -51,31 +64,34 @@ CustomDependencyDeclaration.prototype._createBuildFromCustomFunction = function 
 // in strongly type languages, I'd simply make a type to cover this.
 // Unfortunately, in JS, I feel like this would be not as clear as listing everything out
 var CustomDependencyDeclarationFactory = function (dependencyInformationFactory,
-												   dependencyValidationUtility,
+													dependencyValidationUtility,
+													functionUtilities,
+													propertyBuilderFactory,
 													dependencyTypes,
-													scopeTypes,
-													functionUtilities) {
+													scopeTypes){
 
 	this._dependencyInformationFactory = dependencyInformationFactory;
 	this._dependencyValidationUtility = dependencyValidationUtility;
 	this._dependencyTypes = dependencyTypes;
 	this._scopeTypes = scopeTypes;
 	this._functionUtilities = functionUtilities;
+	this._propertyBuilderFactory = propertyBuilderFactory;
 };
 
-CustomDependencyDeclarationFactory.createCustomDependencyDeclaration = function (dependencyName, constructor) {
+CustomDependencyDeclarationFactory.prototype.createCustomDependencyDeclaration = function (dependencyName, constructor) {
 	return new CustomDependencyDeclaration(dependencyName,
 		constructor,
 		this._dependencyInformationFactory.createDependencyInformation(),
 		this._dependencyValidationUtility,
+		this._functionUtilities,
+		this._propertyBuilderFactory,
 		this._dependencyTypes,
-		this._scopeTypes,
-		this._functionUtilities )
+		this._scopeTypes)
 };
 
 
-imports.inheritenceUtilities.prototypeOf('CustomDependencyDeclaration',CustomDependencyDeclaration).
-	extends(imports.baseDependencyDeclarationContainer,
+imports.inheritanceUtilities.prototypeOf('CustomDependencyDeclaration',CustomDependencyDeclaration).
+	extend(imports.baseDependencyDeclarationContainer,
 			imports.locationBasedDependencyDeclarationContainer);
 
 module.exports.CustomDependencyDeclarationFactory = CustomDependencyDeclarationFactory;

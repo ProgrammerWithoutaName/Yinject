@@ -41,7 +41,7 @@ var buildBaseDependencyValidationUtility = function (scopeTypes, dependencyTypes
 		verifyScopeExists(dependencyInformation);
 	};
 
-
+	return dependencyValidationUtility;
 };
 
 module.exports.buildBaseDependencyValidationUtility = buildBaseDependencyValidationUtility;
