@@ -15,12 +15,12 @@ var LocationBasedDependencyDeclaration = requireFrom('LocationBasedDependencyDec
 module.exports.inheritanceUtilities = utilityBuilder.buildUtility(utilityBuilder.utilities.inheritanceUtilities);
 
 module.exports.baseDependencyDeclarationContainer = {
-	name: 'BaseDependencyDeclaration',
-	givenType: BaseDependencyDeclaration
+    name: 'BaseDependencyDeclaration',
+    givenType: BaseDependencyDeclaration
 };
 
 module.exports.locationBasedDependencyDeclarationContainer = {
-	name: 'LocationBasedDependencyDeclaration',
-	givenType: LocationBasedDependencyDeclaration
+    name: 'LocationBasedDependencyDeclaration',
+    givenType: LocationBasedDependencyDeclaration
 };
 

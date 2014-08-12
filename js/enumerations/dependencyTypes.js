@@ -14,13 +14,13 @@ var allValues = [prototypeDependency, moduleDependency, customDependency];
 var dependencyTypes;
 
 dependencyTypes = {
-	prototypeDependency: prototypeDependency,
-	moduleDependency: moduleDependency,
-	customDependency: customDependency,
-	allValues: allValues,
-	typeIsValid: function (givenType) {
-		return (allValues.indexOf(givenType) > -1);
-	}
+    prototypeDependency: prototypeDependency,
+    moduleDependency: moduleDependency,
+    customDependency: customDependency,
+    allValues: allValues,
+    typeIsValid: function (givenType) {
+        return (allValues.indexOf(givenType) > -1);
+    }
 };
 
 module.exports.dependencyTypes = dependencyTypes;

@@ -11,20 +11,20 @@ var requireFromLocationBuilder = function (basePath) {
 };
 
 var buildNodeUtilities = function () {
-	var nodeUtilities = {};
-	// add builders
-	nodeUtilities.pathBuilder = pathBuilder;
-	nodeUtilities.requireFromLocationBuilder = requireFromLocationBuilder;
+    var nodeUtilities = {};
+    // add builders
+    nodeUtilities.pathBuilder = pathBuilder;
+    nodeUtilities.requireFromLocationBuilder = requireFromLocationBuilder;
 
-	// Default Paths
-	nodeUtilities.pathOfUtility = pathBuilder(__dirname);
-	nodeUtilities.pathOfEnumeration = pathBuilder(__dirname + '/../enumerations/');
+    // Default Paths
+    nodeUtilities.pathOfUtility = pathBuilder(__dirname);
+    nodeUtilities.pathOfEnumeration = pathBuilder(__dirname + '/../enumerations/');
 
-	// Default Requires
-	nodeUtilities.requireUtility = requireFromLocationBuilder(__dirname);
-	nodeUtilities.requireEnum = requireFromLocationBuilder(__dirname + '/../enumerations/');
+    // Default Requires
+    nodeUtilities.requireUtility = requireFromLocationBuilder(__dirname);
+    nodeUtilities.requireEnum = requireFromLocationBuilder(__dirname + '/../enumerations/');
 
-	return nodeUtilities;
+    return nodeUtilities;
 };
 
 

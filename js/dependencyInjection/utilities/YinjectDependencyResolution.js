@@ -4,7 +4,7 @@ var YinjectDependencyResolution = function (scopeTypes) {
     // private
     this.container = {};
     this._singletons = {};
-	this._scopeTypes = scopeTypes;
+    this._scopeTypes = scopeTypes;
 };
 
 YinjectDependencyResolution.prototype._resolveWithoutScope = function (dependencyInformation, scopes) {
@@ -13,7 +13,7 @@ YinjectDependencyResolution.prototype._resolveWithoutScope = function (dependenc
     var i, currentDependencyInformation;
 
     for (i = 0; i < dependenciesToResolve.length; i++) {
-		currentDependencyInformation = this.container[dependenciesToResolve[i]];
+        currentDependencyInformation = this.container[dependenciesToResolve[i]];
 
 
         if (currentDependencyInformation.scopeType === this._scopeTypes.defaultScope) {
@@ -21,8 +21,8 @@ YinjectDependencyResolution.prototype._resolveWithoutScope = function (dependenc
         } else {
 
             resolvedDependencies[currentDependencyInformation.dependencyName] = this._resolveFromScope(scopes[currentDependencyInformation.scopeType],
-				currentDependencyInformation,
-				scopes);
+                currentDependencyInformation,
+                scopes);
         }
     }
     return dependencyInformation.build(resolvedDependencies);
@@ -38,15 +38,15 @@ YinjectDependencyResolution.prototype._resolveFromScope = function (scope, depen
 // public
 YinjectDependencyResolution.prototype.add = function (declaration) {
     declaration.verify();
-	declaration.populate();
+    declaration.populate();
     var dependencyInformation = declaration.dependencyInformation;
     this.container[dependencyInformation.dependencyName] = dependencyInformation;
 };
 
 YinjectDependencyResolution.prototype.resolve = function (dependencyName) {
     var scopes = {};
-	scopes[this._scopeTypes.requestScope] = {};
-	scopes[this._scopeTypes.singletonScope] = this._singletons;
+    scopes[this._scopeTypes.requestScope] = {};
+    scopes[this._scopeTypes.singletonScope] = this._singletons;
 
     var givenDependencyInformation = this.container[dependencyName];
     var resolvedDependency;
@@ -60,11 +60,11 @@ YinjectDependencyResolution.prototype.resolve = function (dependencyName) {
 };
 
 var YinjectDependencyResolutionFactory = function (scopeTypes) {
-	this._scopeTypes = scopeTypes;
+    this._scopeTypes = scopeTypes;
 };
 
 YinjectDependencyResolutionFactory.prototype.createDependencyResolution = function () {
-	return new YinjectDependencyResolution(this._scopeTypes);
+    return new YinjectDependencyResolution(this._scopeTypes);
 };
 
 module.exports.YinjectDependencyResolution = YinjectDependencyResolution;

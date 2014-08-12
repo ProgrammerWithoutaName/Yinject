@@ -9,8 +9,8 @@ Scope:
 var Yinject = function (yinjectDependencyResolution, dependencyDeclarationUtility, dependencyContainerValidation) {
     // private
     this._resolver = yinjectDependencyResolution;
-	this._dependencyDeclaration = dependencyDeclarationUtility;
-	this._dependencyContainerValidation = dependencyContainerValidation;
+    this._dependencyDeclaration = dependencyDeclarationUtility;
+    this._dependencyContainerValidation = dependencyContainerValidation;
     this._uncheckedDeclarations = [];
     this._declarations = [];
 };
@@ -30,7 +30,7 @@ Yinject.prototype._compileAllUncheckedDeclarations = function () {
         for (i = 0; i < this._uncheckedDeclarations.length; i++) {
 
             this._resolver.add(this._uncheckedDeclarations[i]);
-			this._declarations.push(this._uncheckedDeclarations[i].dependencyInformation);
+            this._declarations.push(this._uncheckedDeclarations[i].dependencyInformation);
         }
         this._uncheckedDeclarations = [];
 
@@ -66,15 +66,15 @@ Yinject.prototype.forDependency = function (dependencyName) {
 
 //not that it should be needed....
 var YinjectFactory = function (yinjectDependencyResolutionFactory, dependencyDeclarationUtility, dependencyContainerValidation) {
-	this._yinjectDependencyResolutionFactory = yinjectDependencyResolutionFactory;
-	this._dependencyDeclarationUtility = dependencyDeclarationUtility;
-	this._dependencyContainerValidation = dependencyContainerValidation;
+    this._yinjectDependencyResolutionFactory = yinjectDependencyResolutionFactory;
+    this._dependencyDeclarationUtility = dependencyDeclarationUtility;
+    this._dependencyContainerValidation = dependencyContainerValidation;
 };
 
 YinjectFactory.prototype.createYinjector = function () {
-	return new Yinject(this._yinjectDependencyResolutionFactory.createDependencyResolution()
-		, this._dependencyDeclarationUtility
-		, this._dependencyContainerValidation);
+    return new Yinject(this._yinjectDependencyResolutionFactory.createDependencyResolution(),
+        this._dependencyDeclarationUtility,
+        this._dependencyContainerValidation);
 };
 
 module.exports.YinjectFactory = YinjectFactory;

@@ -4,8 +4,8 @@ var LocationBasedDependencyDeclaration = function () {
 };
 
 LocationBasedDependencyDeclaration.prototype.from = function (location) {
-	this._dependencyInformation.location = location;
-	return this;
+    this._dependencyInformation.location = location;
+    return this;
 };
 
 

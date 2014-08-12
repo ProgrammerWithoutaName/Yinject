@@ -6,41 +6,40 @@ so, inside of a function, you can call it's parents
 
 Example;
 Foo.prototype.doSomething = function (stuff) {
-	//code
-	this.doSomething.__base(this,stuff);
-	or
-	this.doSomething.__base['specificParent'](this,stuff);
+    //code
+    this.doSomething.__base(this,stuff);
+    or
+    this.doSomething.__base['specificParent'](this,stuff);
 }
  */
 
 
-var isTypeOf = function(functionType) {
-	var isType = false;
+var isTypeOf = function (functionType) {
+    var isType = false;
 
-	var meta = this.type.__meta;
+    var meta = this.type.__meta;
 
-	if(meta) {
-		isType |= meta.base.parentMethods.reduce(function(previousValue, currentValue){
-			var initialTypeCheck = isType || (currentValue == functionType);
-			if(!initialTypeCheck && currentValue.isTypeOf) {
-				return currentValue.isTypeOf(functionType);
-			}
-			return initialTypeCheck;
-		}, isType);
-	} else {
-		this.type === functionType;
-	}
+    if (meta) {
+        isType = isType || meta.base.parentMethods.reduce(function (previousValue, currentValue) {
+            var initialTypeCheck = isType || (currentValue === functionType);
+            if (!initialTypeCheck && currentValue.isTypeOf) {
+                return currentValue.isTypeOf(functionType);
+            }
+            return initialTypeCheck;
+        }, isType);
+    } else {
+        isType = this.type === functionType;
+    }
 
-
-	return isType;
+    return isType;
 };
 
-var getTypeUtilitiesFor = function(typeGiven) {
+var getTypeUtilitiesFor = function (typeGiven) {
 
-	return {
-		type: typeGiven,
-		isTypeOf: isTypeOf
-	};
+    return {
+        type: typeGiven,
+        isTypeOf: isTypeOf
+    };
 };
 
 /***
@@ -49,21 +48,21 @@ var getTypeUtilitiesFor = function(typeGiven) {
  * @param parentMethod
  * @param parentMethodOwnerName
  */
-var extendMethod = function(parentMethod, parentMethodOwnerName) {
-	var name = parentMethod.__meta.ownerName || parentMethodOwnerName;
-	this.__meta.addParent(name, parentMethod);
+var extendMethod = function (parentMethod, parentMethodOwnerName) {
+    var name = parentMethod.__meta.ownerName || parentMethodOwnerName;
+    this.__meta.addParent(name, parentMethod);
 };
 
 // Method Extension Utility Definition
 var MethodExtensionUtility = function (metaFactory) {
-	this._metaFactory = metaFactory;
+    this._metaFactory = metaFactory;
 };
 
-MethodExtensionUtility.prototype.initInheritableMethod = function(fn, name, owner) {
-	var meta = this._metaFactory.createMeta(fn,name,owner);
-	fn.__meta = meta;
-	fn.__base = meta.base;
-	fn.extendMethod = extendMethod;
+MethodExtensionUtility.prototype.initInheritableMethod = function (fn, name, owner) {
+    var meta = this._metaFactory.createMeta(fn, name, owner);
+    fn.__meta = meta;
+    fn.__base = meta.base;
+    fn.extendMethod = extendMethod;
 };
 
 MethodExtensionUtility.prototype.getTypeUtilitiesFor = getTypeUtilitiesFor;

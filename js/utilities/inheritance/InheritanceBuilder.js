@@ -2,31 +2,31 @@
 
 // Utilities that have no business being public
 var buildMethodContainer = function (name, owningType) {
-	return {
-		name: name,
-		method: owningType.prototype[name],
-		owner: owningType
-	};
+    return {
+        name: name,
+        method: owningType.prototype[name],
+        owner: owningType
+    };
 };
 
 var buildConstructorContainer = function (name, givenType) {
-	return {
-		name:name,
-		method:givenType,
-		owner:givenType
-	};
+    return {
+        name: name,
+        method: givenType,
+        owner: givenType
+    };
 };
 
 var buildTypeContainer = function (name, givenType) {
-	return {
-		name:name,
-		givenType: givenType,
-		proto: givenType.prototype,
-		constructorContainer: buildConstructorContainer(name,givenType),
-		getContainerForMethod: function (name) {
-			return buildMethodContainer(name, givenType);
-		}
-	};
+    return {
+        name: name,
+        givenType: givenType,
+        proto: givenType.prototype,
+        constructorContainer: buildConstructorContainer(name, givenType),
+        getContainerForMethod: function (name) {
+            return buildMethodContainer(name, givenType);
+        }
+    };
 };
 
 /**
@@ -40,27 +40,27 @@ var buildTypeContainer = function (name, givenType) {
  * a method in the child and explicitly call __base(this,arguments);
  *
  *  var methodExtensionUtility = new require('MethodExtensionUtility.js').MethodExtensionUtility(...);
- * 	var Foo = function (someRequirement) {
- * 		Foo.__base(this, someRequirement);
- * 	};
+ *  var Foo = function (someRequirement) {
+ *      Foo.__base(this, someRequirement);
+ *  };
  *
- * 	Foo.prototype.doSomething = function() {
- * 		this.oneThing = 'SomeString';
- * 	}
+ *  Foo.prototype.doSomething = function() {
+ *      this.oneThing = 'SomeString';
+ *  }
  *  var extender = new InheritanceBuilder({name:'Foo', givenType:Foo}, methodExtensionUtility);
  *
  * @param {Object} childContainer - this object should contain two variables:
- * 	{
- * 		{String} name: name of child type,
- * 		{Function} givenType: Constructor of child type.
- * 	}
+ *  {
+ *      {String} name: name of child type,
+ *      {Function} givenType: Constructor of child type.
+ *  }
  * @param {Object} methodExtensionUtility utility for extending 'methods' (Functions that specifically belong to prototypes.)
  * @api public
  */
-var InheritanceBuilder = function(childContainer, methodExtensionUtility) {
-	this._methodExtensionUtility = methodExtensionUtility;
-	this.childContainer = buildTypeContainer(childContainer.name, childContainer.givenType, childContainer.givenType);
-	this.childType = this._methodExtensionUtility.getTypeUtilitiesFor(this.childContainer.givenType);
+var InheritanceBuilder = function (childContainer, methodExtensionUtility) {
+    this._methodExtensionUtility = methodExtensionUtility;
+    this.childContainer = buildTypeContainer(childContainer.name, childContainer.givenType, childContainer.givenType);
+    this.childType = this._methodExtensionUtility.getTypeUtilitiesFor(this.childContainer.givenType);
 };
 
 /**
@@ -76,41 +76,41 @@ var InheritanceBuilder = function(childContainer, methodExtensionUtility) {
  *
 
  *  var methodExtensionUtility = new require('MethodExtensionUtility.js').MethodExtensionUtility(...);
- * 	var Bar = function(someRequirement) {
- * 		this._someRequirement = someRequirement;
- * 	};
+ *  var Bar = function(someRequirement) {
+ *      this._someRequirement = someRequirement;
+ *  };
  *
- * 	Bar.prototype.doSomething = function(valueToPass) { //value to pass doesn't have to match in child method, but it's nice to have.
- * 		this._someRequirement.doAction(valueToPass);
- * 	};
+ *  Bar.prototype.doSomething = function(valueToPass) { //value to pass doesn't have to match in child method, but it's nice to have.
+ *      this._someRequirement.doAction(valueToPass);
+ *  };
  *
- * 	Bar.prototype.doBar = function () { this.barValue = 'bar';};
+ *  Bar.prototype.doBar = function () { this.barValue = 'bar';};
  *
- * 	Bar.prototype.overLapInherit = function () { this.overLap = 'bar'; };
+ *  Bar.prototype.overLapInherit = function () { this.overLap = 'bar'; };
  *
- * 	var Other = function(otherRequirement) {
- * 		this._otherRequirement = otherRequirement;
- * 	};
+ *  var Other = function(otherRequirement) {
+ *      this._otherRequirement = otherRequirement;
+ *  };
  *
- * 	Other.prototype.doSomething(valueToPass) {
- * 		this._otherRequirement.doOtherThing(valueToPass);
- * 	}:
+ *  Other.prototype.doSomething(valueToPass) {
+ *      this._otherRequirement.doOtherThing(valueToPass);
+ *  }:
  *
- * 	Other.prototype.doOther = function () { this.otherValue = 'other'};
+ *  Other.prototype.doOther = function () { this.otherValue = 'other'};
  *
- * 	Other.prototype.overLapInherit = function () { this.overLap = 'other'; };
+ *  Other.prototype.overLapInherit = function () { this.overLap = 'other'; };
  *
- * 	var Foo = function (someRequirement, otherRequirement) {
- * 		Foo.__base['Bar'](this, someRequirement);
- * 		Foo.__base['Other'](this, otherRequirement);
- * 	};
+ *  var Foo = function (someRequirement, otherRequirement) {
+ *      Foo.__base['Bar'](this, someRequirement);
+ *      Foo.__base['Other'](this, otherRequirement);
+ *  };
  *
- * 	Foo.prototype.doSomething = function(valueToPass) {
- * 		this.oneThing = 'SomeString';
- * 		Foo.prototype.doSomething.__base(this, valueToPass);
- * 	};
+ *  Foo.prototype.doSomething = function(valueToPass) {
+ *      this.oneThing = 'SomeString';
+ *      Foo.prototype.doSomething.__base(this, valueToPass);
+ *  };
  *
- * 	Foo.prototype.doFoo = function () { this.fooValue = 'foo'; };
+ *  Foo.prototype.doFoo = function () { this.fooValue = 'foo'; };
  *
  *
  *
@@ -138,85 +138,85 @@ var InheritanceBuilder = function(childContainer, methodExtensionUtility) {
  *
  *
  * @param {Object} types - this object should contain two variables:
- * 	{
- * 		{String} name: name of child type,
- * 		{Function} givenType: Constructor of child type.
- * 	}
+ * {
+ *   {String} name: name of child type,
+ *   {Function} givenType: Constructor of child type.
+ * }
  */
-InheritanceBuilder.prototype.extend = function(types) {
-	// I am extending 1 or many
-	// I expect {name: type:} either in array, or as a total number of types.
-	var extendTypes;
-	var self = this;
+InheritanceBuilder.prototype.extend = function (types) {
+    // I am extending 1 or many
+    // I expect {name: type:} either in array, or as a total number of types.
+    var extendTypes;
+    var self = this;
 
-	if(typeof types == 'Array') {
-		extendTypes = types;
-	} else {
-		extendTypes = Array.prototype.slice.call(arguments,0);
-	}
+    if (types.isArray()) {
+        extendTypes = types;
+    } else {
+        extendTypes = Array.prototype.slice.call(arguments, 0);
+    }
 
-	extendTypes.forEach(function (parentType) {
-		var parentContainer = buildTypeContainer(parentType.name, parentType.givenType);
-		self._extendSingle(parentContainer);
-	});
+    extendTypes.forEach(function (parentType) {
+        var parentContainer = buildTypeContainer(parentType.name, parentType.givenType);
+        self._extendSingle(parentContainer);
+    });
 
-	return this;
+    return this;
 };
 
 InheritanceBuilder.prototype._extendSingle = function (parentTypeContainer) {
-	// make the type inheritable if it isn't already.
+    // make the type inheritable if it isn't already.
 
-	this._confirmMethodInit(this.childContainer.constructorContainer);
-	this._confirmMethodInit(parentTypeContainer.constructorContainer);
+    this._confirmMethodInit(this.childContainer.constructorContainer);
+    this._confirmMethodInit(parentTypeContainer.constructorContainer);
 
-	if(this.childType.isTypeOf(parentTypeContainer.givenType)) {
-		return;
-	}
+    if (this.childType.isTypeOf(parentTypeContainer.givenType)) {
+        return;
+    }
 
-	this.childContainer.givenType.extendMethod(parentTypeContainer.givenType, parentTypeContainer.name);
+    this.childContainer.givenType.extendMethod(parentTypeContainer.givenType, parentTypeContainer.name);
 
-	this._extendBaseMethods(parentTypeContainer);
+    this._extendBaseMethods(parentTypeContainer);
 };
 
-InheritanceBuilder.prototype._extendBaseMethods = function(parentTypeContainer) {
-	this._confirmMethodInit(parentTypeContainer.constructorContainer);
-	var childProto = this.childContainer.proto;
-	var parentProto = parentTypeContainer.proto;
-
-	// we intentionally iterate over the constructor and pull it in as well.
-	// since it exists, we also want the ability to call parent constructors. Same logic applies.
-	for(var item in parentProto) {
-		if (!childProto.hasOwnProperty(item)) {
-			childProto[item] = parentProto[item];
-		} else if (typeof childProto[item] === 'function' && item !== 'constructor') {
-			this._addMethodParent(item,parentTypeContainer);
-		}
-	}
+InheritanceBuilder.prototype._extendBaseMethods = function (parentTypeContainer) {
+    this._confirmMethodInit(parentTypeContainer.constructorContainer);
+    var childProto = this.childContainer.proto;
+    var parentProto = parentTypeContainer.proto;
+    var item;
+    // we intentionally iterate over the constructor and pull it in as well.
+    // since it exists, we also want the ability to call parent constructors. Same logic applies.
+    for (item in parentProto) {
+        if (!childProto.hasOwnProperty(item)) {
+            childProto[item] = parentProto[item];
+        } else if (typeof childProto[item] === 'function' && item !== 'constructor') {
+            this._addMethodParent(item, parentTypeContainer);
+        }
+    }
 };
 
-InheritanceBuilder.prototype._addMethodParent = function (functionName,parentContainer) {
+InheritanceBuilder.prototype._addMethodParent = function (functionName, parentContainer) {
 
-	this._confirmMethodInit(this.childContainer.getContainerForMethod(functionName));
-	this._confirmMethodInit( parentContainer.getContainerForMethod(functionName));
+    this._confirmMethodInit(this.childContainer.getContainerForMethod(functionName));
+    this._confirmMethodInit(parentContainer.getContainerForMethod(functionName));
 
-	// ONLY add method parent if the child actually owns the function given.
-	if(this.childContainer.proto[functionName].__meta.ownerName === this.childContainer.name) {
-		this.childContainer.proto[functionName].extendMethod(parentContainer.proto[functionName]);
-	}
+    // ONLY add method parent if the child actually owns the function given.
+    if (this.childContainer.proto[functionName].__meta.ownerName === this.childContainer.name) {
+        this.childContainer.proto[functionName].extendMethod(parentContainer.proto[functionName]);
+    }
 };
 
-InheritanceBuilder.prototype._confirmMethodInit = function(methodContainer) {
-	if(!methodContainer.method.__meta) {
-		this._methodExtensionUtility.initInheritableMethod(methodContainer.method, methodContainer.name, methodContainer.owner);
-	}
+InheritanceBuilder.prototype._confirmMethodInit = function (methodContainer) {
+    if (!methodContainer.method.__meta) {
+        this._methodExtensionUtility.initInheritableMethod(methodContainer.method, methodContainer.name, methodContainer.owner);
+    }
 };
 
-var InheritanceBuilderFactory = function(methodExtensionUtility) {
-	this._methodExtensionUtility = methodExtensionUtility;
+var InheritanceBuilderFactory = function (methodExtensionUtility) {
+    this._methodExtensionUtility = methodExtensionUtility;
 };
 
-InheritanceBuilderFactory.prototype.createInheritanceBuilder = function(childContainer) {
-	return new InheritanceBuilder(childContainer, this._methodExtensionUtility);
+InheritanceBuilderFactory.prototype.createInheritanceBuilder = function (childContainer) {
+    return new InheritanceBuilder(childContainer, this._methodExtensionUtility);
 };
 
 module.exports.InheritanceBuilder = InheritanceBuilder;

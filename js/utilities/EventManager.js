@@ -5,13 +5,13 @@ var EventManager = function () {
 };
 
 EventManager.prototype._getEventIndex = function (id) {
-	var i;
-	for (i = 0; i < this._eventCallbacks.length; i++) {
-		if(this._eventCallbacks[i].id === id) {
-			return i;
-		}
-	}
-	return -1;
+    var i;
+    for (i = 0; i < this._eventCallbacks.length; i++) {
+        if (this._eventCallbacks[i].id === id) {
+            return i;
+        }
+    }
+    return -1;
 };
 
 EventManager.prototype.setEvent = function (id, eventCallback) {
@@ -27,7 +27,7 @@ EventManager.prototype.setEvent = function (id, eventCallback) {
 EventManager.prototype.removeEvent = function (id) {
     var index = this._getEventIndex(id);
     if (index >= 0) {
-		this._eventCallbacks.splice(index, 1);
+        this._eventCallbacks.splice(index, 1);
     }
 };
 

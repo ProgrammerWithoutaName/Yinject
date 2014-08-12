@@ -1,24 +1,24 @@
 "use strict";
 
 var buildDependencyDeclarationUtility = function (prototypeDependencyDeclarationFactory,
-											customDependencyDeclarationFactory,
-											moduleDependencyDeclarationFactory) {
+    customDependencyDeclarationFactory,
+    moduleDependencyDeclarationFactory) {
 
-	var dependencyDeclaration = {};
+    var dependencyDeclaration = {};
 
-	dependencyDeclaration.createPrototypeDependency = function (dependencyName, prototypeName) {
-		return prototypeDependencyDeclarationFactory.createPrototypeDependencyDeclaration(dependencyName, prototypeName);
-	};
+    dependencyDeclaration.createPrototypeDependency = function (dependencyName, prototypeName) {
+        return prototypeDependencyDeclarationFactory.createPrototypeDependencyDeclaration(dependencyName, prototypeName);
+    };
 
-	dependencyDeclaration.createCustomConstructorDependency = function (dependencyName, customConstructor) {
-		return customDependencyDeclarationFactory.createCustomDependencyDeclaration(dependencyName, customConstructor);
-	};
+    dependencyDeclaration.createCustomConstructorDependency = function (dependencyName, customConstructor) {
+        return customDependencyDeclarationFactory.createCustomDependencyDeclaration(dependencyName, customConstructor);
+    };
 
-	dependencyDeclaration.createModuleDependency = function (dependencyName, moduleName) {
-		return moduleDependencyDeclarationFactory.createModuleDependencyDeclaration(dependencyName, moduleName);
-	};
+    dependencyDeclaration.createModuleDependency = function (dependencyName, moduleName) {
+        return moduleDependencyDeclarationFactory.createModuleDependencyDeclaration(dependencyName, moduleName);
+    };
 
-	return dependencyDeclaration;
+    return dependencyDeclaration;
 };
 
 module.exports.buildDependencyDeclaration = buildDependencyDeclarationUtility;
